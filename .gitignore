@@ -1,0 +1,26 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env*.local
+.DS_Store
+
+# Expo
+.expo/
+web-build/
+expo-env.d.ts
+apps/mobile/android/
+apps/mobile/ios/
+
+# Rust spikes
+target/
+
+# Signing material
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
