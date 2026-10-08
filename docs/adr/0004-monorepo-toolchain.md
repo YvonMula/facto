@@ -1,6 +1,6 @@
 # ADR 0004: Monorepo toolchain
 
-- Status: Proposed (waiting for project owner approval)
+- Status: Accepted (owner, 2026-10-08)
 - Date: 2026-10-08
 - PRD sections: 7.5, 8.1
 

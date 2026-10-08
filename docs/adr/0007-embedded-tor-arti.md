@@ -1,6 +1,6 @@
 # ADR 0007: Embedded Tor with Arti (spike findings)
 
-- Status: Proposed (spike; waiting for project owner approval)
+- Status: Accepted as direction (owner, 2026-10-08); the open items listed below remain and the external cryptographic review can overturn it
 - Date: 2026-10-08
 - PRD sections: 5.5, 7.5, 9.6
 

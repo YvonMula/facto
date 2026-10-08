@@ -1,6 +1,6 @@
 # ADR 0006: Privacy Pass tokens via RFC 9578 type 2 (spike findings)
 
-- Status: Proposed (spike; waiting for project owner approval and the external cryptographic review at the phase 1 gate)
+- Status: Accepted as direction (owner, 2026-10-08); the open items listed below remain and the external cryptographic review can overturn it
 - Date: 2026-10-08
 - PRD sections: 5.4, 5.6, 7.1, 8.1
 

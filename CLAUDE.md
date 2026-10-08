@@ -108,11 +108,11 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | --- | --- | --- |
 | 0001 | Signed payloads carry only coarse time buckets | Accepted (owner) |
 | 0002 | Envelopes use standard `crypto_box_seal` | Accepted (owner) |
-| 0003 | Canonical length-prefixed signing input | Proposed |
-| 0004 | Monorepo toolchain (pnpm, Vitest, tsx) | Proposed |
-| 0005 | `SodiumBackend`; raw libsodium HKDF on Node; HMAC via HKDF-Extract on phone | Proposed |
-| 0006 | Privacy Pass tokens, RFC 9578 type 2 | Proposed (spike) |
-| 0007 | Embedded Tor with Arti | Proposed (spike) |
+| 0003 | Canonical length-prefixed signing input | Accepted (owner) |
+| 0004 | Monorepo toolchain (pnpm, Vitest, tsx) | Accepted (owner) |
+| 0005 | `SodiumBackend`; raw libsodium HKDF on Node; HMAC via HKDF-Extract on phone | Accepted (owner) |
+| 0006 | Privacy Pass tokens, RFC 9578 type 2 | Direction accepted (owner); phone path open |
+| 0007 | Embedded Tor with Arti | Direction accepted (owner); Android build and bootstrap unverified |
 
 Crypto items waiting for review: `docs/crypto-review-queue.md`.
 
@@ -136,12 +136,11 @@ Decided in conversation with the owner (not ADRs):
 
 ### Next steps
 
-1. Owner reviews ADRs 0003–0007.
-2. Phone `SodiumBackend` on `react-native-libsodium`; run the vectors on Hermes.
-3. SQLCipher local store (`op-sqlite`) and panic wipe (keys first, then data).
-4. Per-case recovery codes (PRD 4.7).
-5. Prepare the external cryptographic review package (phase 1 gate).
-6. Then Phase 2: API + intake, issuer, workers, DB migrations.
+1. Phone `SodiumBackend` on `react-native-libsodium`; run the vectors on Hermes.
+2. SQLCipher local store (`op-sqlite`) and panic wipe (keys first, then data).
+3. Per-case recovery codes (PRD 4.7).
+4. Prepare the external cryptographic review package (phase 1 gate).
+5. Then Phase 2: API + intake, issuer, workers, DB migrations.
 
 ### Open questions
 

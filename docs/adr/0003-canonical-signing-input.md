@@ -1,6 +1,6 @@
 # ADR 0003: Canonical binary signing input
 
-- Status: Proposed (waiting for project owner approval)
+- Status: Accepted (owner, 2026-10-08)
 - Date: 2026-10-08
 - PRD sections: 5.2, 5.3, 7.1
 

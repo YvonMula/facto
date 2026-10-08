@@ -1,6 +1,6 @@
 # ADR 0005: One crypto interface, two libsodium backends
 
-- Status: Proposed (waiting for project owner approval; NEEDS-CRYPTO-REVIEW)
+- Status: Accepted (owner, 2026-10-08)
 - Date: 2026-10-08
 - PRD sections: 5.1–5.4, 7.1
 
