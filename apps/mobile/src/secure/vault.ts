@@ -22,11 +22,16 @@ export const KEY_NAMES = {
   dbKeyWrap: 'facto.db-key-wrap.v1',
   /** Always present: real duress verifier or a dummy (PRD 4.8). */
   duress: 'facto.duress.v1',
+  /** Consecutive wrong PINs (ADR 0009). */
+  pinFailures: 'facto.pin-failures.v1',
 } as const;
+
+/** ADR 0009: the 3rd consecutive wrong PIN triggers a panic wipe. */
+export const MAX_PIN_ATTEMPTS = 3;
 
 export type VaultState = 'fresh' | 'no-pin' | 'pin';
 
-export type UnlockResult = { kind: 'ok'; dbKey: Uint8Array } | { kind: 'duress' } | { kind: 'wrong' };
+export type UnlockResult = { kind: 'ok'; dbKey: Uint8Array } | { kind: 'duress' } | { kind: 'wrong' } | { kind: 'exhausted' };
 
 export class KeyWipeError extends Error {}
 
@@ -61,17 +66,29 @@ export class Vault {
   /**
    * Checks the PIN against both the real wrap and the duress verifier, always computing both,
    * so the time taken does not reveal which one matched.
+   *
+   * ADR 0009: the failure counter is incremented and stored *before* the check, so killing the
+   * app during the slow Argon2id step still spends the attempt. A missing or unreadable counter
+   * counts as one attempt short of the limit, so deleting it cannot buy extra guesses.
+   * Returns `exhausted` on the last wrong attempt; the caller must then wipe.
    */
   async unlock(pin: string): Promise<UnlockResult> {
+    const stored = Number.parseInt((await this.store.get(KEY_NAMES.pinFailures)) ?? '', 10);
+    const before = Number.isInteger(stored) && stored >= 0 && stored < MAX_PIN_ATTEMPTS ? stored : MAX_PIN_ATTEMPTS - 1;
+    const attempt = before + 1;
+    await this.store.set(KEY_NAMES.pinFailures, String(attempt));
+
     const wrapText = await this.store.get(KEY_NAMES.dbKeyWrap);
     const duressText = await this.store.get(KEY_NAMES.duress);
     const wrap = wrapText ? parseWrap(wrapText, fromBase64Url) : null;
     const duress = duressText ? parseWrap(duressText, fromBase64Url) : null;
     const key = wrap ? unwrapKey(this.b, wrap, pin) : null;
     const isDuress = duress ? isDuressPin(this.b, duress, pin) : false;
-    if (key) return { kind: 'ok', dbKey: key };
-    if (isDuress) return { kind: 'duress' };
-    return { kind: 'wrong' };
+    if (key || isDuress) {
+      await this.store.set(KEY_NAMES.pinFailures, '0');
+      return key ? { kind: 'ok', dbKey: key } : { kind: 'duress' };
+    }
+    return attempt >= MAX_PIN_ATTEMPTS ? { kind: 'exhausted' } : { kind: 'wrong' };
   }
 
   /** Sets the app PIN and, optionally, a duress PIN. The unwrapped key is removed from the store. */
@@ -79,6 +96,7 @@ export class Vault {
     if (duressPin !== null && duressPin === pin) throw new Error('duress PIN must differ from the app PIN');
     await this.store.set(KEY_NAMES.dbKeyWrap, serialiseWrap(wrapKey(this.b, dbKey, pin), toBase64Url));
     await this.store.set(KEY_NAMES.duress, serialiseWrap(makeDuressVerifier(this.b, duressPin), toBase64Url));
+    await this.store.set(KEY_NAMES.pinFailures, '0');
     await this.store.delete(KEY_NAMES.dbKey);
   }
 

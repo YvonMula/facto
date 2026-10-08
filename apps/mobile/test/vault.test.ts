@@ -3,7 +3,7 @@ import type { SodiumBackend } from '@facto/crypto';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { getState, migrate, setState } from '../src/secure/app-db';
 import { panicWipe } from '../src/secure/panic';
-import { KEY_NAMES, KeyWipeError, Vault } from '../src/secure/vault';
+import { KEY_NAMES, KeyWipeError, MAX_PIN_ATTEMPTS, Vault } from '../src/secure/vault';
 import { FakeDbFiles, FakeKeyStore } from './fakes';
 
 let b: SodiumBackend;
@@ -59,6 +59,84 @@ describe('vault', () => {
   });
 });
 
+describe('PIN attempt limit (ADR 0009)', () => {
+  const withPin = async () => {
+    const ctx = setup();
+    await ctx.vault.setPin(await ctx.vault.create(), '482913', '999111');
+    return ctx;
+  };
+
+  it('allows 3 attempts', () => {
+    expect(MAX_PIN_ATTEMPTS).toBe(3);
+  });
+
+  it('the third consecutive wrong PIN is exhausted', async () => {
+    const { vault } = await withPin();
+    expect((await vault.unlock('000001')).kind).toBe('wrong');
+    expect((await vault.unlock('000002')).kind).toBe('wrong');
+    expect((await vault.unlock('000003')).kind).toBe('exhausted');
+  });
+
+  it('the right PIN after two wrong ones unlocks and resets the counter', async () => {
+    const { store, vault } = await withPin();
+    await vault.unlock('000001');
+    await vault.unlock('000002');
+    expect((await vault.unlock('482913')).kind).toBe('ok');
+    expect(store.data.get(KEY_NAMES.pinFailures)).toBe('0');
+    expect((await vault.unlock('000003')).kind).toBe('wrong');
+  });
+
+  it('the duress PIN after two wrong ones still counts as duress', async () => {
+    const { vault } = await withPin();
+    await vault.unlock('000001');
+    await vault.unlock('000002');
+    expect((await vault.unlock('999111')).kind).toBe('duress');
+  });
+
+  it('the counter survives an app restart', async () => {
+    const { store, vault } = await withPin();
+    await vault.unlock('000001');
+    await vault.unlock('000002');
+    const restarted = new Vault(b, store);
+    expect((await restarted.unlock('000003')).kind).toBe('exhausted');
+  });
+
+  it('the attempt is recorded before the slow PIN check runs', async () => {
+    const { store, vault } = await withPin();
+    let seenDuringCheck: string | null = null;
+    const realGet = store.get.bind(store);
+    // The wrap is read after the counter is written and before Argon2id runs.
+    store.get = async (n: string) => {
+      if (n === KEY_NAMES.dbKeyWrap) seenDuringCheck = await realGet(KEY_NAMES.pinFailures);
+      return realGet(n);
+    };
+    await vault.unlock('000001');
+    expect(seenDuringCheck).toBe('1');
+  });
+
+  it('a deleted or corrupted counter gives no extra guesses', async () => {
+    const { store, vault } = await withPin();
+    store.data.delete(KEY_NAMES.pinFailures);
+    expect((await vault.unlock('000001')).kind).toBe('exhausted');
+    store.data.set(KEY_NAMES.pinFailures, 'garbage');
+    expect((await vault.unlock('000002')).kind).toBe('exhausted');
+  });
+
+  it('exhaustion followed by the wipe leaves a fresh app', async () => {
+    const { files, vault } = await withPin();
+    for (let i = 0; i < MAX_PIN_ATTEMPTS; i++) await vault.unlock(`00000${i}`);
+    await panicWipe(vault, null, files);
+    expect(await vault.state()).toBe('fresh');
+  });
+
+  it('the counter is erased by the wipe', async () => {
+    const { store, vault } = await withPin();
+    await vault.unlock('000001');
+    await vault.wipeKeys();
+    expect(store.data.has(KEY_NAMES.pinFailures)).toBe(false);
+  });
+});
+
 describe('panic wipe (PRD 4.8, 7.2)', () => {
   it('destroys every key before touching data, then deletes the database', async () => {
     const { store, files, vault } = setup();
@@ -102,7 +180,7 @@ describe('panic wipe (PRD 4.8, 7.2)', () => {
     await vault.setPin(await vault.create(), '482913', '999111');
     await panicWipe(vault, null, files);
     expect(await vault.state()).toBe('fresh');
-    expect((await vault.unlock('482913')).kind).toBe('wrong');
+    expect((await vault.unlock('482913')).kind).not.toBe('ok');
   });
 });
 

@@ -18,7 +18,7 @@
     },
     "panic": {
       "title": "Tout effacer rapidement",
-      "body": "Appuyez longuement sur le logo Facto pour effacer toutes les données et les clés de ce téléphone. L’application redémarre alors comme si elle venait d’être installée."
+      "body": "Appuyez longuement sur le logo Facto et confirmez pour effacer toutes les données et les clés de ce téléphone. L’application redémarre alors comme si elle venait d’être installée. Si vous définissez un code, trois codes incorrects de suite effacent aussi tout."
     }
   },
   "tabs": {
@@ -84,7 +84,7 @@
   },
   "pin": {
     "title": "Protéger Facto avec un code",
-    "body": "Facultatif. Le code est demandé à chaque ouverture de Facto. Sans lui, vos données enregistrées ne peuvent pas être lues.",
+    "body": "Facultatif. Le code est demandé à chaque ouverture de Facto. Sans lui, vos données enregistrées ne peuvent pas être lues. Trois codes incorrects de suite effacent tout sur ce téléphone.",
     "enter": "Code (6 à 12 chiffres)",
     "confirm": "Répétez le code",
     "duressToggle": "Définir aussi un code de contrainte",
@@ -106,5 +106,11 @@
   },
   "error": {
     "storage": "Facto n’a pas pu ouvrir son stockage sécurisé sur ce téléphone."
+  },
+  "wipe": {
+    "title": "Tout effacer ?",
+    "body": "Toutes les données et les clés de ce téléphone seront effacées. C’est irréversible.",
+    "cancel": "Annuler",
+    "confirm": "Tout effacer"
   }
 }

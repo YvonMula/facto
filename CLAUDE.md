@@ -86,7 +86,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | Phase | State | Notes |
 | --- | --- | --- |
 | CI gates (before features) | ✅ Done | 7 gates in `tools/gates`: no-location, no-telemetry, no-identifiers, deps-reviewed, permissions, i18n, claims |
-| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN. Missing: device verification of the native modules, per-case recovery codes (UI + format), external crypto review (gate) |
+| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN, 3-attempt limit (ADR 0009). Missing: device verification of the native modules, per-case recovery codes (UI + format), external crypto review (gate) |
 | 2. Backend core | ⬜ Not started | |
 | 3. App V1 | 🟡 Shell only | `apps/mobile` shell built early on request; no feature code |
 | 4–8. Dashboard, pilot, audit, launch, after launch | ⬜ Not started | |
@@ -99,7 +99,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
 | `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), phone backend adapter (`backend-rn.ts`), `test-vectors.json` | 49 |
 | `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
-| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`); FR/EN; INTERNET only | 10 + typecheck + Android bundle |
+| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; FR/EN; INTERNET only | 19 + typecheck + Android bundle |
 | `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
 
 ### Decisions
@@ -114,6 +114,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | 0006 | Privacy Pass tokens, RFC 9578 type 2 | Direction accepted (owner); phone path open |
 | 0007 | Embedded Tor with Arti | Direction accepted (owner); Android build and bootstrap unverified |
 | 0008 | Per-case root key; ASCII-only HKDF info | Accepted (owner); vectors regenerated |
+| 0009 | Local unlock policy: 3 PIN attempts then wipe, no warning; long-press wipe asks first | Accepted (owner) |
 
 Crypto items waiting for review: `docs/crypto-review-queue.md`.
 
@@ -126,6 +127,7 @@ Decided in conversation with the owner (not ADRs):
 - App state lives only in the SQLCipher database; nothing is written unencrypted to disk.
 - No biometric unlock in V1 (keeps the Face ID usage key out of the permission matrix).
 - Duress PIN: wipe, then open an empty normal-looking app (PRD 7.2 wording); long-press wipe returns to first launch (PRD 4.8).
+- 3 wrong PINs in a row wipe the phone, with no attempts-left warning; long-press wipe asks for confirmation (ADR 0009).
 
 ### Not verified yet
 
@@ -133,7 +135,7 @@ Decided in conversation with the owner (not ADRs):
 - Arti Android build (no Android NDK in the container).
 - Privacy Pass on Hermes (no `crypto.subtle`; phone path undecided).
 - Phone crypto backend on Hermes with the real `react-native-libsodium` (vectors only pass through a Node stand-in with the same API).
-- On a device: SQLCipher actually encrypting the file, the raw-key `x'…'` form being honoured, `db.delete()` removing WAL/SHM files, Keystore/Keychain deletion, Argon2id time on a 2 GB phone, and locking when the app goes to the background.
+- On a device: SQLCipher actually encrypting the file, the raw-key `x'…'` form being honoured, `db.delete()` removing WAL/SHM files, Keystore/Keychain deletion, Argon2id time on a 2 GB phone, locking when the app goes to the background, and the PIN failure counter surviving the app being killed mid-check.
 - The app on a real device or emulator.
 - GitHub CI has not run (no PR opened yet).
 - Permissions gate checks the prebuild manifest, not yet the Gradle-merged release manifest.
@@ -151,5 +153,3 @@ Decided in conversation with the owner (not ADRs):
 - rustls crypto provider for Arti (`ring` proposed).
 - Phone implementation for Privacy Pass: WebCrypto polyfill or Rust native module.
 - Where the merged-manifest permission check runs in the release pipeline.
-- PIN brute force: no attempt limit or wipe-after-N-failures yet; the PRD is silent. Needs a decision.
-- Panic wipe confirmation: long-press wipes without a confirmation dialog (fast by design); confirm that is wanted.

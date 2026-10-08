@@ -18,7 +18,7 @@
     },
     "panic": {
       "title": "Erase everything quickly",
-      "body": "Long-press the Facto logo to erase all data and keys on this phone. The app then starts again as if it was just installed."
+      "body": "Long-press the Facto logo and confirm to erase all data and keys on this phone. The app then starts again as if it was just installed. If you set a PIN, three wrong PINs in a row also erase everything."
     }
   },
   "tabs": {
@@ -84,7 +84,7 @@
   },
   "pin": {
     "title": "Protect Facto with a PIN",
-    "body": "Optional. The PIN is asked each time you open Facto. Without it, your saved data cannot be read.",
+    "body": "Optional. The PIN is asked each time you open Facto. Without it, your saved data cannot be read. Three wrong PINs in a row erase everything on this phone.",
     "enter": "PIN (6 to 12 digits)",
     "confirm": "Repeat the PIN",
     "duressToggle": "Also set a duress PIN",
@@ -106,5 +106,11 @@
   },
   "error": {
     "storage": "Facto could not open its secure storage on this phone."
+  },
+  "wipe": {
+    "title": "Erase everything?",
+    "body": "All data and keys on this phone will be erased. This cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Erase everything"
   }
 }

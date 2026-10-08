@@ -115,6 +115,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           await wipeAndRestart(true);
           return 'ok';
         }
+        if (r.kind === 'exhausted') {
+          // ADR 0009: third wrong PIN. Wipe and return to first launch, with no warning shown.
+          await wipeAndRestart(false);
+          return 'ok';
+        }
         return 'wrong';
       },
       wipe: () => wipeAndRestart(false),
