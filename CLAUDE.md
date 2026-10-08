@@ -86,7 +86,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | Phase | State | Notes |
 | --- | --- | --- |
 | CI gates (before features) | ✅ Done | 7 gates in `tools/gates`: no-location, no-telemetry, no-identifiers, deps-reviewed, permissions, i18n, claims |
-| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node backend). Phone `SodiumBackend` adapter done (vectors pass via a Node stand-in). Missing: SQLCipher store, panic wipe with key destruction, per-case recovery codes, external crypto review (gate) |
+| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN. Missing: device verification of the native modules, per-case recovery codes (UI + format), external crypto review (gate) |
 | 2. Backend core | ⬜ Not started | |
 | 3. App V1 | 🟡 Shell only | `apps/mobile` shell built early on request; no feature code |
 | 4–8. Dashboard, pilot, audit, launch, after launch | ⬜ Not started | |
@@ -99,7 +99,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
 | `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), phone backend adapter (`backend-rn.ts`), `test-vectors.json` | 49 |
 | `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
-| `apps/mobile` | Expo SDK 57 shell: language → 3 safety screens → tabs Home · Search · + · Alerts · My activity; FR/EN; INTERNET only | typecheck + Android bundle |
+| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`); FR/EN; INTERNET only | 10 + typecheck + Android bundle |
 | `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
 
 ### Decisions
@@ -123,7 +123,9 @@ Decided in conversation with the owner (not ADRs):
 - Before source publication, move to a fresh repo under a pseudonymous org with clean history; keep personal data out of code and commits.
 - Tor (Arti) and vote tokens are tackled in Phase 1 as spikes.
 - Device language comes from `Intl`, not `expo-localization`.
-- Onboarding state stays in memory until the SQLCipher store exists (nothing unencrypted on disk).
+- App state lives only in the SQLCipher database; nothing is written unencrypted to disk.
+- No biometric unlock in V1 (keeps the Face ID usage key out of the permission matrix).
+- Duress PIN: wipe, then open an empty normal-looking app (PRD 7.2 wording); long-press wipe returns to first launch (PRD 4.8).
 
 ### Not verified yet
 
@@ -131,17 +133,17 @@ Decided in conversation with the owner (not ADRs):
 - Arti Android build (no Android NDK in the container).
 - Privacy Pass on Hermes (no `crypto.subtle`; phone path undecided).
 - Phone crypto backend on Hermes with the real `react-native-libsodium` (vectors only pass through a Node stand-in with the same API).
+- On a device: SQLCipher actually encrypting the file, the raw-key `x'…'` form being honoured, `db.delete()` removing WAL/SHM files, Keystore/Keychain deletion, Argon2id time on a 2 GB phone, and locking when the app goes to the background.
 - The app on a real device or emulator.
 - GitHub CI has not run (no PR opened yet).
 - Permissions gate checks the prebuild manifest, not yet the Gradle-merged release manifest.
 
 ### Next steps
 
-1. Run the vector suite on Hermes with the real `react-native-libsodium` (needs a device build).
-2. SQLCipher local store (`op-sqlite`) and panic wipe (keys first, then data).
-3. Per-case recovery codes (PRD 4.7).
-4. Prepare the external cryptographic review package (phase 1 gate).
-5. Then Phase 2: API + intake, issuer, workers, DB migrations.
+1. Device build (EAS development build or a machine with the Android SDK): run the vector suite on Hermes and the device checks listed above.
+2. Per-case recovery codes (PRD 4.7): format for `case_id + case_root` (ADR 0008), export and import screens.
+3. Prepare the external cryptographic review package (phase 1 gate).
+4. Then Phase 2: API + intake, issuer, workers, DB migrations.
 
 ### Open questions
 
@@ -149,3 +151,5 @@ Decided in conversation with the owner (not ADRs):
 - rustls crypto provider for Arti (`ring` proposed).
 - Phone implementation for Privacy Pass: WebCrypto polyfill or Rust native module.
 - Where the merged-manifest permission check runs in the release pipeline.
+- PIN brute force: no attempt limit or wipe-after-N-failures yet; the PRD is silent. Needs a decision.
+- Panic wipe confirmation: long-press wipes without a confirmation dialog (fast by design); confirm that is wanted.

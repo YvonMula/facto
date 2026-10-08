@@ -1,7 +1,9 @@
 import { Redirect } from 'expo-router';
-import { useOnboarding } from '../src/state/onboarding';
+import { useSession } from '../src/state/session';
 
 export default function Index() {
-  const { done } = useOnboarding();
-  return <Redirect href={done ? '/(tabs)/home' : '/onboarding/language'} />;
+  const { phase } = useSession();
+  if (phase.name === 'locked') return <Redirect href="/lock" />;
+  if (phase.name === 'ready' && !phase.onboardingDone) return <Redirect href="/onboarding/language" />;
+  return <Redirect href="/(tabs)/home" />;
 }

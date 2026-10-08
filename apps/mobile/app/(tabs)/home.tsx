@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Chip, EmptyState, Screen } from '../../src/components/ui';
-import { useOnboarding } from '../../src/state/onboarding';
+import { useSession } from '../../src/state/session';
 import { contentTypeColors, space, type, useTheme } from '../../src/theme';
 
 type ContentType = keyof typeof contentTypeColors;
@@ -12,12 +12,12 @@ const TYPES: ContentType[] = ['whistleblowing', 'community', 'news'];
 export default function HomeScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { wipe } = useOnboarding();
+  const { wipe } = useSession();
   const [filter, setFilter] = useState<ContentType | null>(null);
 
   // Long-press on the logo triggers the panic wipe (PRD 4.8). No confirmation by design.
   const logo = (
-    <Pressable accessibilityRole="header" onLongPress={wipe} delayLongPress={800}>
+    <Pressable accessibilityRole="header" onLongPress={() => void wipe()} delayLongPress={800}>
       <Text style={[type.title, { color: theme.text }]}>
         {t('home.title')}
         <Text style={{ color: theme.accent }}>.</Text>

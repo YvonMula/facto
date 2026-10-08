@@ -8,7 +8,6 @@
   "safety": {
     "step": "Étape {{current}} sur {{total}}",
     "next": "Suivant",
-    "start": "Commencer la lecture",
     "protects": {
       "title": "Ce que Facto ne collecte pas",
       "body": "Facto ne demande pas votre nom, votre numéro de téléphone, votre e-mail ni votre position, et ne conserve pas votre adresse IP. Il n’y a pas de compte. Sur nos serveurs, vos publications, commentaires et votes ne sont pas liés entre eux."
@@ -82,5 +81,30 @@
       "title": "Rien pour l’instant",
       "body": "Vos cas, brouillons et publications enregistrées restent sur ce téléphone et ne sont jamais synchronisés."
     }
+  },
+  "pin": {
+    "title": "Protéger Facto avec un code",
+    "body": "Facultatif. Le code est demandé à chaque ouverture de Facto. Sans lui, vos données enregistrées ne peuvent pas être lues.",
+    "enter": "Code (6 à 12 chiffres)",
+    "confirm": "Répétez le code",
+    "duressToggle": "Définir aussi un code de contrainte",
+    "duressBody": "Si quelqu’un vous force à ouvrir Facto, saisissez le code de contrainte. Facto efface tout et ouvre une application vide.",
+    "duressEnter": "Code de contrainte (différent de votre code)",
+    "save": "Enregistrer le code",
+    "skip": "Plus tard",
+    "errors": {
+      "format": "Utilisez 6 à 12 chiffres.",
+      "mismatch": "Les deux codes ne correspondent pas.",
+      "sameAsPin": "Le code de contrainte doit être différent de votre code."
+    }
+  },
+  "lock": {
+    "title": "Saisissez votre code",
+    "unlock": "Déverrouiller",
+    "wrong": "Code incorrect.",
+    "working": "Vérification…"
+  },
+  "error": {
+    "storage": "Facto n’a pas pu ouvrir son stockage sécurisé sur ce téléphone."
   }
 }

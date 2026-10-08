@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PillButton } from '../../src/components/ui';
 import { LANGUAGES } from '../../src/i18n';
+import { useSession } from '../../src/state/session';
 import { radius, space, type, useTheme } from '../../src/theme';
 
 /** PRD 4.1 step 1. */
@@ -11,6 +12,7 @@ export default function LanguageScreen() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
+  const { setLanguage } = useSession();
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: theme.background }]}>
       <View style={{ gap: space.sm }}>
@@ -25,7 +27,7 @@ export default function LanguageScreen() {
               key={lng}
               accessibilityRole="radio"
               accessibilityState={{ checked: selected }}
-              onPress={() => void i18n.changeLanguage(lng)}
+              onPress={() => void setLanguage(lng)}
               style={[styles.option, { backgroundColor: theme.surface, borderColor: selected ? theme.accent : theme.border }]}
             >
               <Text style={[type.heading, { color: theme.text }]}>{t(`language.${lng}`)}</Text>

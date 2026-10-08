@@ -8,7 +8,6 @@
   "safety": {
     "step": "Step {{current}} of {{total}}",
     "next": "Next",
-    "start": "Start reading",
     "protects": {
       "title": "What Facto does not collect",
       "body": "Facto does not ask for your name, phone number, email or location, and does not store your IP address. There is no account. Your posts, comments and votes are not linked to each other on our servers."
@@ -82,5 +81,30 @@
       "title": "Nothing here yet",
       "body": "Your cases, drafts and saved posts stay on this phone and are never synced."
     }
+  },
+  "pin": {
+    "title": "Protect Facto with a PIN",
+    "body": "Optional. The PIN is asked each time you open Facto. Without it, your saved data cannot be read.",
+    "enter": "PIN (6 to 12 digits)",
+    "confirm": "Repeat the PIN",
+    "duressToggle": "Also set a duress PIN",
+    "duressBody": "If someone forces you to unlock Facto, enter the duress PIN instead. Facto erases everything and opens an empty app.",
+    "duressEnter": "Duress PIN (different from your PIN)",
+    "save": "Save PIN",
+    "skip": "Not now",
+    "errors": {
+      "format": "Use 6 to 12 digits.",
+      "mismatch": "The two PINs do not match.",
+      "sameAsPin": "The duress PIN must be different from your PIN."
+    }
+  },
+  "lock": {
+    "title": "Enter your PIN",
+    "unlock": "Unlock",
+    "wrong": "Wrong PIN.",
+    "working": "Checking…"
+  },
+  "error": {
+    "storage": "Facto could not open its secure storage on this phone."
   }
 }

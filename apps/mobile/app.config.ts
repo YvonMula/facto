@@ -43,7 +43,12 @@ const config: ExpoConfig = {
       'android.permission.VIBRATE',
     ],
   },
-  plugins: ['expo-router'],
+  plugins: [
+    'expo-router',
+    // No biometric unlock in V1: keeps NSFaceIDUsageDescription out of Info.plist (PRD 7.2 matrix).
+    // Android backup rules are not needed: allowBackup is false.
+    ['expo-secure-store', { faceIDPermission: false, configureAndroidBackup: false }],
+  ],
   experiments: { typedRoutes: false },
 };
 
