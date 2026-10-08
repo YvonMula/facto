@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  # CLAUDE.md invariant 3: Expo CLI telemetry stays off everywhere.
+  EXPO_NO_TELEMETRY: 1
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Generate native projects for the permission gate
+        run: if [ -d apps/mobile ]; then pnpm --filter @facto/mobile prebuild; fi
+      - name: Invariant gates
+        run: pnpm gates
