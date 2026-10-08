@@ -82,6 +82,10 @@ export async function createNodeBackend(): Promise<SodiumBackend> {
     },
     boxSeal: (message, publicKey) => sodium.crypto_box_seal(message, publicKey),
     boxSealOpen: (ciphertext, publicKey, privateKey) => sodium.crypto_box_seal_open(ciphertext, publicKey, privateKey),
+    pwhashArgon2id: (outLength, password, salt, opsLimit, memLimit) =>
+      sodium.crypto_pwhash(outLength, password, salt, opsLimit, memLimit, sodium.crypto_pwhash_ALG_ARGON2ID13),
+    aeadEncrypt: (message, ad, nonce, key) => sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(message, sodium.from_string(ad), null, nonce, key),
+    aeadDecrypt: (ciphertext, ad, nonce, key) => sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, ciphertext, sodium.from_string(ad), nonce, key),
     memcmp: (a, b) => a.length === b.length && sodium.memcmp(a, b),
     memzero: (b) => sodium.memzero(b),
   };
