@@ -50,6 +50,7 @@ pnpm workspaces. TypeScript strict mode everywhere.
 - **Crypto, schema and security changes** follow the `facto-crypto-change`, `facto-schema-change` and `facto-security-review` skills. Run `facto-security-review` before every commit.
 - **Never invent security mechanisms.** Use the ones the PRD names; anything new goes into an ADR in `docs/adr/` and waits for human approval.
 - **Record decisions.** Any choice the PRD leaves open becomes an ADR.
+- **Keep "Project status" current.** Any commit that changes the project's state (phase step done, ADR proposed/accepted/rejected, dependency added, spike finished, new blocker or open question) updates the "Project status" section below in the same commit. Before ending a session, check the section still matches the repo.
 
 ## Language and wording
 
@@ -75,3 +76,76 @@ cd spikes/arti && cargo build --release     # Arti spike (ADR 0007)
 CI (`.github/workflows/ci.yml`) runs install, typecheck, test, prebuild and gates on every push.
 
 Spikes live in `packages/crypto/spikes/` and `spikes/`. They are not exported or shipped until their ADR is accepted.
+
+## Project status
+
+_Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR yet)._
+
+### Phases (PRD 10.2)
+
+| Phase | State | Notes |
+| --- | --- | --- |
+| CI gates (before features) | ✅ Done | 7 gates in `tools/gates`: no-location, no-telemetry, no-identifiers, deps-reviewed, permissions, i18n, claims |
+| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node backend). Missing: phone `SodiumBackend`, SQLCipher store, panic wipe with key destruction, per-case recovery codes, external crypto review (gate) |
+| 2. Backend core | ⬜ Not started | |
+| 3. App V1 | 🟡 Shell only | `apps/mobile` shell built early on request; no feature code |
+| 4–8. Dashboard, pilot, audit, launch, after launch | ⬜ Not started | |
+
+### What exists
+
+| Path | Content | Tests |
+| --- | --- | --- |
+| `tools/gates` | Invariant gates + fixture tests | 49 |
+| `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
+| `packages/crypto` | Device secret, HKDF keys, nullifiers, canonical signing, sealed envelope, replay cache, `test-vectors.json` | 33 |
+| `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
+| `apps/mobile` | Expo SDK 57 shell: language → 3 safety screens → tabs Home · Search · + · Alerts · My activity; FR/EN; INTERNET only | typecheck + Android bundle |
+| `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
+
+### Decisions
+
+| ADR | Topic | Status |
+| --- | --- | --- |
+| 0001 | Signed payloads carry only coarse time buckets | Accepted (owner) |
+| 0002 | Envelopes use standard `crypto_box_seal` | Accepted (owner) |
+| 0003 | Canonical length-prefixed signing input | Proposed |
+| 0004 | Monorepo toolchain (pnpm, Vitest, tsx) | Proposed |
+| 0005 | `SodiumBackend`; raw libsodium HKDF on Node; HMAC via HKDF-Extract on phone | Proposed |
+| 0006 | Privacy Pass tokens, RFC 9578 type 2 | Proposed (spike) |
+| 0007 | Embedded Tor with Arti | Proposed (spike) |
+
+Crypto items waiting for review: `docs/crypto-review-queue.md`.
+
+Decided in conversation with the owner (not ADRs):
+- Bottom nav: Home · Search · + · Alerts · My activity.
+- The old `facto.app` Firebase prototype is abandoned, nothing migrated.
+- Before source publication, move to a fresh repo under a pseudonymous org with clean history; keep personal data out of code and commits.
+- Tor (Arti) and vote tokens are tackled in Phase 1 as spikes.
+- Device language comes from `Intl`, not `expo-localization`.
+- Onboarding state stays in memory until the SQLCipher store exists (nothing unencrypted on disk).
+
+### Not verified yet
+
+- Arti bootstrap to the Tor network (container has no direct TCP to relays).
+- Arti Android build (no Android NDK in the container).
+- Privacy Pass on Hermes (no `crypto.subtle`; phone path undecided).
+- Phone crypto backend against `test-vectors.json` (backend not written).
+- The app on a real device or emulator.
+- GitHub CI has not run (no PR opened yet).
+- Permissions gate checks the prebuild manifest, not yet the Gradle-merged release manifest.
+
+### Next steps
+
+1. Owner reviews ADRs 0003–0007.
+2. Phone `SodiumBackend` on `react-native-libsodium`; run the vectors on Hermes.
+3. SQLCipher local store (`op-sqlite`) and panic wipe (keys first, then data).
+4. Per-case recovery codes (PRD 4.7).
+5. Prepare the external cryptographic review package (phase 1 gate).
+6. Then Phase 2: API + intake, issuer, workers, DB migrations.
+
+### Open questions
+
+- PRD 10.4 list (legal entity, hosting, funding, limits, urgent-alert policy, attestation vs proof-of-work, reporting obligations).
+- rustls crypto provider for Arti (`ring` proposed).
+- Phone implementation for Privacy Pass: WebCrypto polyfill or Rust native module.
+- Where the merged-manifest permission check runs in the release pipeline.
