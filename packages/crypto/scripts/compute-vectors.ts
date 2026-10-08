@@ -1,6 +1,6 @@
 import type { SodiumBackend } from '../src/backend.js';
 import { fromHex, toBase64Url, toHex } from '../src/encoding.js';
-import { deriveCaseAuthorKey, deriveCaseIdentityKey, nullifier } from '../src/keys.js';
+import { deriveCaseAuthorKey, deriveCaseIdentityKey, deriveCaseRoot, nullifier } from '../src/keys.js';
 import { signingBytes, signPayload } from '../src/sign.js';
 import { CASE_A, CASE_B, COMMENT_ID, DEVICE_SECRET_HEX, vectorCase, vectorClaim, vectorComment } from './vector-inputs.js';
 
@@ -16,6 +16,7 @@ export function computeDeterministicVectors(b: SodiumBackend) {
   const comment = { kind: 'comment' as const, payload: vectorComment(toBase64Url(identityA.publicKey)) };
   return {
     keys: {
+      case_root: { [CASE_A]: toHex(deriveCaseRoot(b, ds, CASE_A)), [CASE_B]: toHex(deriveCaseRoot(b, ds, CASE_B)) },
       case_author: { [CASE_A]: toHex(authorA.publicKey), [CASE_B]: toHex(authorB.publicKey) },
       case_identity: { [CASE_A]: toHex(identityA.publicKey), [CASE_B]: toHex(identityB.publicKey) },
     },

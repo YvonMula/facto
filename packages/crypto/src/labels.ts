@@ -3,9 +3,11 @@
  * .claude/skills/facto-crypto-change/SKILL.md. Never reuse a label for a different purpose.
  */
 export const LABELS = {
-  /** Case author key from device secret + case ID (PRD 5.3). */
+  /** Per-case root from device secret + case ID; the author and identity keys derive from it (ADR 0008). */
+  caseRoot: 'facto/case-root/v1',
+  /** Case author key from the case root (PRD 5.3, ADR 0008). */
   caseAuthor: 'facto/case-author/v1',
-  /** Case-scoped commenter key from device secret + case ID (PRD 5.2). */
+  /** Case-scoped commenter key from the case root (PRD 5.2, ADR 0008). */
   caseIdentity: 'facto/case-identity/v1',
   /** Vote nullifier from device secret + target ID (PRD 5.4). */
   vote: 'facto/vote/v1',

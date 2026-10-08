@@ -10,3 +10,4 @@ Every change marked `NEEDS-CRYPTO-REVIEW` is listed here until a human approves 
 | 2026-10-08 | ADR 0005: `SodiumBackend`; raw libsodium HKDF exports on Node; HMAC via HKDF-Extract on the phone | Accepted by owner; external review pending |
 | 2026-10-08 | `packages/crypto`: device secret, HKDF seeds, case author/identity keys, nullifiers, payload signing, envelope v1 with inner ID/expiry binding and 4 KB padding, replay cache, test vectors | Proposed |
 | 2026-10-08 | ADR 0006 spike: RFC 9578 type 2 tokens via `@cloudflare/privacypass-ts`, purpose bound through `origin_info` (`packages/crypto/spikes/tokens`) | Direction accepted by owner; spike only; external review pending |
+| 2026-10-08 | ADR 0008: per-case root key (author and identity keys derive from it) and ASCII-only HKDF info; vectors regenerated | Accepted by owner; external review pending |

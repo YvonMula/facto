@@ -2,6 +2,9 @@ import { readFileSync } from 'node:fs';
 import { CaseV1, CommentV1 } from '@facto/schema';
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
+  caseAuthorKeyFromRoot,
+  caseIdentityKeyFromRoot,
+  deriveCaseRoot,
   deriveCaseAuthorKey,
   deriveCaseIdentityKey,
   EnvelopeError,
@@ -81,6 +84,18 @@ describe('unlinkability (PRD 5.0, 5.2)', () => {
       deriveCaseIdentityKey(b, s, CASE_B),
     ].map((k) => toHex(k.publicKey));
     expect(new Set(keys).size).toBe(4);
+  });
+  it('a case root alone gives exactly that case\'s keys, and nothing about other cases', () => {
+    const s = ds();
+    const root = deriveCaseRoot(b, s, CASE_A);
+    expect(toHex(caseAuthorKeyFromRoot(b, root).publicKey)).toBe(toHex(deriveCaseAuthorKey(b, s, CASE_A).publicKey));
+    expect(toHex(caseIdentityKeyFromRoot(b, root).publicKey)).toBe(toHex(deriveCaseIdentityKey(b, s, CASE_A).publicKey));
+    expect(toHex(root)).not.toBe(toHex(deriveCaseRoot(b, s, CASE_B)));
+    expect(toHex(caseAuthorKeyFromRoot(b, root).publicKey)).not.toBe(toHex(deriveCaseAuthorKey(b, s, CASE_B).publicKey));
+  });
+  it('rejects scope IDs that are not lowercase UUIDs, so HKDF info stays canonical ASCII', () => {
+    expect(() => deriveCaseRoot(b, ds(), CASE_A.toUpperCase())).toThrow();
+    expect(() => nullifier(b, ds(), 'vote', 'not-a-uuid')).toThrow();
   });
   it('the same case gives the same key on the same device (continuity inside one case)', () => {
     const s = ds();

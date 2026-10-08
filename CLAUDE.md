@@ -97,7 +97,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | --- | --- | --- |
 | `tools/gates` | Invariant gates + fixture tests | 49 |
 | `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
-| `packages/crypto` | Device secret, HKDF keys, nullifiers, canonical signing, sealed envelope, replay cache, `test-vectors.json` | 33 |
+| `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, `test-vectors.json` | 35 |
 | `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
 | `apps/mobile` | Expo SDK 57 shell: language → 3 safety screens → tabs Home · Search · + · Alerts · My activity; FR/EN; INTERNET only | typecheck + Android bundle |
 | `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
@@ -113,6 +113,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | 0005 | `SodiumBackend`; raw libsodium HKDF on Node; HMAC via HKDF-Extract on phone | Accepted (owner) |
 | 0006 | Privacy Pass tokens, RFC 9578 type 2 | Direction accepted (owner); phone path open |
 | 0007 | Embedded Tor with Arti | Direction accepted (owner); Android build and bootstrap unverified |
+| 0008 | Per-case root key; ASCII-only HKDF info | Accepted (owner); vectors regenerated |
 
 Crypto items waiting for review: `docs/crypto-review-queue.md`.
 
