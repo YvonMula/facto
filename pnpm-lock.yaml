@@ -30,6 +30,9 @@ importers:
         specifier: 0.8.4
         version: 0.8.4
     devDependencies:
+      '@cloudflare/privacypass-ts':
+        specifier: 0.9.0
+        version: 0.9.0
       '@types/libsodium-wrappers-sumo':
         specifier: 0.8.2
         version: 0.8.2
@@ -50,6 +53,18 @@ importers:
         version: 22.20.5
 
 packages:
+
+  '@cloudflare/blindrsa-ts@0.4.5':
+    resolution: {integrity: sha512-fwVlqM/tWdic+rmDlRUxjo442R1p7ac5j9H2kmif7xzYD4RPvzh0yaEW/RooP6tYV78QOos3Iq1PKYQTJyLa8g==}
+    engines: {node: '>=24'}
+
+  '@cloudflare/privacypass-ts@0.9.0':
+    resolution: {integrity: sha512-vePkwIJqZsqWUtSKlQ/pqpdSGNZzq6bktnAR81+6jV9NATVTIDEFRbdkQPYdfC+Jv55HD64shCzbPGcBqyW79g==}
+    engines: {node: '>=20'}
+
+  '@cloudflare/voprf-ts@1.0.0':
+    resolution: {integrity: sha512-OvvWlnm5bjwPr7KaJ8MItQDaMz4DgN6BuOO3x/WXLVqCwM4rn6H/8Mgdbxq2XAEAi3BAh58XWDlAfmHL+AZTBA==}
+    engines: {node: '>=20'}
 
   '@esbuild/aix-ppc64@0.28.2':
     resolution: {integrity: sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ==}
@@ -210,6 +225,13 @@ packages:
   '@jridgewell/sourcemap-codec@1.6.0':
     resolution: {integrity: sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==}
 
+  '@noble/curves@1.5.0':
+    resolution: {integrity: sha512-J5EKamIHnKPyClwVrzmaf5wSdQXgdHcPZIZLu3bwnbeCx8/7NPK5q2ZBWF+5FvYGByjiQQsJYX6jfgB2wDPn3A==}
+
+  '@noble/hashes@1.4.0':
+    resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
+    engines: {node: '>= 16'}
+
   '@oxc-project/types@0.153.0':
     resolution: {integrity: sha512-jSNrRIyvPVLL5E1z/tS5zLAprosGz/FuI1PWwEOz59j3E4TTTzSpqKb/RDGqJhhW0QHYISGXxq582wGx6T11Tw==}
 
@@ -353,6 +375,13 @@ packages:
 
   '@vitest/utils@4.1.11':
     resolution: {integrity: sha512-zTCVGpyFsGWBhllOyKlTw/vnr6D9qxsfSDyfbyZmTyjHw5N/VuvzHpHoQjm2ZJzn4RJgx5w4r7V0er69CmLgPQ==}
+
+  asn1-parser@1.1.8:
+    resolution: {integrity: sha512-3aYtVA7yzCK7r+qbBzpvzcq53kz7IRfGWTObbAGZieTj+By8wbSGSncZO7TztQ5UXrHELCesUIlJGD4JJcUAsA==}
+
+  asn1js@3.0.5:
+    resolution: {integrity: sha512-FVnvrKJwpt9LP2lAMl8qZswRNm3T4q9CON+bxldk2iwk3FFpuwhx2FfinyitizWHsVYyaY+y5JzDR0rCMV5yTQ==}
+    engines: {node: '>=12.0.0'}
 
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
@@ -500,6 +529,19 @@ packages:
     resolution: {integrity: sha512-49cGhUbXj8Qenv0iTMxA1cFBzxXoctpC9Ujd77t1WcbJIr6nF/eI7g/8MgxrYldFRuAXvja7xQRwavoW7kgrxQ==}
     engines: {node: ^10 || ^12 || >=14}
 
+  pvtsutils@1.3.6:
+    resolution: {integrity: sha512-PLgQXQ6H2FWCaeRak8vvk1GW462lMxB5s3Jm673N82zI4vqtVUPuZdffdZbPDFRoU8kAhItWFtPCWiPpp4/EDg==}
+
+  pvutils@1.2.0:
+    resolution: {integrity: sha512-BbubeCEyTuQjVMakvJQ/Sxbc93F2pwmbsxONT/ZRrwU7Ua38d8unYTwXpTVLAKJ4BDuH9IGztCjQcd/N/39Dvg==}
+    engines: {node: '>=16.0.0'}
+
+  quicvarint@0.1.4:
+    resolution: {integrity: sha512-Khpzdux2Ugx6SmD+scyxktiwmZWcWg1t6su1AjZMNgKuoieCQxxbmDReEN1poeKRr25N7mulsBEAb/KdQVhDDQ==}
+
+  rfc4648@1.5.3:
+    resolution: {integrity: sha512-MjOWxM065+WswwnmNONOT+bD1nXzY9Km6u3kzvnx8F8/HXGZdz3T6e6vZJ8Q/RIMUSp/nxqjH3GwvJDy8ijeQQ==}
+
   rolldown@1.2.13:
     resolution: {integrity: sha512-/5apOkwWxtACcQtZ5WlrAsKS4JwXVThQPJZ3RqIruRY9UG9M8e0VlXN068xum/JRKA4aIUoJ13ghe/kGCvidiQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -507,6 +549,9 @@ packages:
 
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
+
+  sjcl@1.0.8:
+    resolution: {integrity: sha512-LzIjEQ0S0DpIgnxMEayM1rq9aGwGRG4OnZhCdjx7glTaJtf4zRfpg87ImfjSJjoW9vKpagd82McDOwbRT5kQKQ==}
 
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
@@ -532,6 +577,9 @@ packages:
   tinyrainbow@3.2.0:
     resolution: {integrity: sha512-LgO3D9yZJjApUiuUfl9iFAwrtaX4+lok3wJIqttGoKCHlWUqHqbQpnxCf82L8FjgKsh4iGo78hqJwgL8F6To2A==}
     engines: {node: '>=14.0.0'}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   tsx@4.23.15:
     resolution: {integrity: sha512-Yiex1Ovn8z2xPpOWckIiysV1SSyRMY9BkLF++q0yKiDxCqRhosKfMg3janKkiLBwZ5c/YryloKwGZcrEmtwxKw==}
@@ -640,6 +688,24 @@ packages:
 
 snapshots:
 
+  '@cloudflare/blindrsa-ts@0.4.5':
+    dependencies:
+      sjcl: 1.0.8
+
+  '@cloudflare/privacypass-ts@0.9.0':
+    dependencies:
+      '@cloudflare/blindrsa-ts': 0.4.5
+      '@cloudflare/voprf-ts': 1.0.0
+      asn1-parser: 1.1.8
+      asn1js: 3.0.5
+      quicvarint: 0.1.4
+      rfc4648: 1.5.3
+
+  '@cloudflare/voprf-ts@1.0.0':
+    optionalDependencies:
+      '@noble/curves': 1.5.0
+      '@noble/hashes': 1.4.0
+
   '@esbuild/aix-ppc64@0.28.2':
     optional: true
 
@@ -719,6 +785,14 @@ snapshots:
     optional: true
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
+
+  '@noble/curves@1.5.0':
+    dependencies:
+      '@noble/hashes': 1.4.0
+    optional: true
+
+  '@noble/hashes@1.4.0':
+    optional: true
 
   '@oxc-project/types@0.153.0': {}
 
@@ -828,6 +902,14 @@ snapshots:
       '@vitest/pretty-format': 4.1.11
       convert-source-map: 2.0.0
       tinyrainbow: 3.2.0
+
+  asn1-parser@1.1.8: {}
+
+  asn1js@3.0.5:
+    dependencies:
+      pvtsutils: 1.3.6
+      pvutils: 1.2.0
+      tslib: 2.8.1
 
   assertion-error@2.0.1: {}
 
@@ -956,6 +1038,16 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
+  pvtsutils@1.3.6:
+    dependencies:
+      tslib: 2.8.1
+
+  pvutils@1.2.0: {}
+
+  quicvarint@0.1.4: {}
+
+  rfc4648@1.5.3: {}
+
   rolldown@1.2.13:
     dependencies:
       '@oxc-project/types': 0.153.0
@@ -979,6 +1071,8 @@ snapshots:
 
   siginfo@2.0.0: {}
 
+  sjcl@1.0.8: {}
+
   source-map-js@1.2.2: {}
 
   stackback@0.0.2: {}
@@ -995,6 +1089,8 @@ snapshots:
       picomatch: 4.0.7
 
   tinyrainbow@3.2.0: {}
+
+  tslib@2.8.1: {}
 
   tsx@4.23.15:
     dependencies:

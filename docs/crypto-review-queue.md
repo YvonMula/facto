@@ -9,3 +9,4 @@ Every change marked `NEEDS-CRYPTO-REVIEW` is listed here until a human approves 
 | 2026-10-08 | ADR 0003: canonical length-prefixed signing input with purpose label | Proposed |
 | 2026-10-08 | ADR 0005: `SodiumBackend`; raw libsodium HKDF exports on Node; HMAC via HKDF-Extract on the phone | Proposed |
 | 2026-10-08 | `packages/crypto`: device secret, HKDF seeds, case author/identity keys, nullifiers, payload signing, envelope v1 with inner ID/expiry binding and 4 KB padding, replay cache, test vectors | Proposed |
+| 2026-10-08 | ADR 0006 spike: RFC 9578 type 2 tokens via `@cloudflare/privacypass-ts`, purpose bound through `origin_info` (`packages/crypto/spikes/tokens`) | Proposed; spike only |

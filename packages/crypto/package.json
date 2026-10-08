@@ -19,6 +19,7 @@
     "libsodium-wrappers-sumo": "0.8.4"
   },
   "devDependencies": {
+    "@cloudflare/privacypass-ts": "0.9.0",
     "@types/libsodium-wrappers-sumo": "0.8.2",
     "@types/node": "22.20.5"
   }
