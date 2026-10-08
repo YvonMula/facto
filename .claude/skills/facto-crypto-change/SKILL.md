@@ -32,6 +32,9 @@ Keep this table in sync with `packages/crypto/labels.ts`.
 | `facto/flag/v1` | Flag nullifier from device secret + target ID |
 | `facto/local-db/v1` | Local database key wrapping |
 | `facto/case-recovery/v1` | Per-case recovery code encoding |
+| `facto/sig/case/v1` | Signature over a case version (ADR 0003) |
+| `facto/sig/identity-claim/v1` | Signature over a case-scoped username claim (ADR 0003) |
+| `facto/sig/comment/v1` | Signature over a comment version (ADR 0003) |
 
 ## Tests required with every crypto change
 
