@@ -1,0 +1,86 @@
+{
+  "language": {
+    "title": "Choisissez votre langue",
+    "subtitle": "Vous pourrez la changer plus tard dans les réglages.",
+    "fr": "Français",
+    "en": "English"
+  },
+  "safety": {
+    "step": "Étape {{current}} sur {{total}}",
+    "next": "Suivant",
+    "start": "Commencer la lecture",
+    "protects": {
+      "title": "Ce que Facto ne collecte pas",
+      "body": "Facto ne demande pas votre nom, votre numéro de téléphone, votre e-mail ni votre position, et ne conserve pas votre adresse IP. Il n’y a pas de compte. Sur nos serveurs, vos publications, commentaires et votes ne sont pas liés entre eux."
+    },
+    "limits": {
+      "title": "Ce que Facto ne peut pas protéger",
+      "body": "Le contenu lui-même peut vous identifier. Un détail que peu de personnes connaissent peut mener à vous. Facto ne peut pas non plus protéger un téléphone déjà compromis, et sans Tor votre opérateur mobile peut voir que vous utilisez Facto."
+    },
+    "panic": {
+      "title": "Tout effacer rapidement",
+      "body": "Appuyez longuement sur le logo Facto pour effacer toutes les données et les clés de ce téléphone. L’application redémarre alors comme si elle venait d’être installée."
+    }
+  },
+  "tabs": {
+    "home": "Accueil",
+    "search": "Recherche",
+    "create": "Nouveau cas",
+    "alerts": "Alertes",
+    "activity": "Mon activité"
+  },
+  "home": {
+    "title": "Facto",
+    "chips": {
+      "whistleblowing": "Signalements",
+      "community": "Communauté",
+      "news": "Actualités"
+    },
+    "empty": {
+      "title": "Rien à lire pour l’instant",
+      "body": "Les cas de votre zone apparaîtront ici."
+    }
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher dans les cas publiés",
+    "filter": "Filtres",
+    "feed": "Fil",
+    "map": "Carte",
+    "empty": {
+      "title": "La recherche porte uniquement sur les cas publiés",
+      "body": "Vos recherches ne sont jamais conservées."
+    },
+    "mapEmpty": {
+      "title": "Carte des zones",
+      "body": "Des nombres par zone, jamais de lieux précis. Les zones de moins de 5 cas n’affichent aucun nombre."
+    }
+  },
+  "create": {
+    "title": "Nouveau cas",
+    "empty": {
+      "title": "La publication arrive dans une prochaine version",
+      "body": "Vous choisirez un type, une catégorie et une zone dans la liste. Votre position n’est jamais lue."
+    }
+  },
+  "alerts": {
+    "title": "Alertes",
+    "all": "Toutes",
+    "unread": "Non lues",
+    "empty": {
+      "title": "Aucune alerte",
+      "body": "Les alertes urgentes de sécurité publique et les nouvelles de vos propres cas apparaîtront ici. Facto n’envoie pas de notifications push."
+    }
+  },
+  "activity": {
+    "title": "Mon activité",
+    "subtitle": "Conservé uniquement sur ce téléphone.",
+    "cases": "Mes cas",
+    "drafts": "Brouillons",
+    "saved": "Enregistrés",
+    "empty": {
+      "title": "Rien pour l’instant",
+      "body": "Vos cas, brouillons et publications enregistrées restent sur ce téléphone et ne sont jamais synchronisés."
+    }
+  }
+}

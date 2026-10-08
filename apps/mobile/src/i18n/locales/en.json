@@ -1,0 +1,86 @@
+{
+  "language": {
+    "title": "Choose your language",
+    "subtitle": "You can change it later in Settings.",
+    "fr": "Français",
+    "en": "English"
+  },
+  "safety": {
+    "step": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "start": "Start reading",
+    "protects": {
+      "title": "What Facto does not collect",
+      "body": "Facto does not ask for your name, phone number, email or location, and does not store your IP address. There is no account. Your posts, comments and votes are not linked to each other on our servers."
+    },
+    "limits": {
+      "title": "What Facto cannot protect",
+      "body": "The content itself can identify you. A detail only a few people know can point to you. Facto also cannot protect a phone that is already compromised, and without Tor your mobile operator can see that you use Facto."
+    },
+    "panic": {
+      "title": "Erase everything quickly",
+      "body": "Long-press the Facto logo to erase all data and keys on this phone. The app then starts again as if it was just installed."
+    }
+  },
+  "tabs": {
+    "home": "Home",
+    "search": "Search",
+    "create": "New case",
+    "alerts": "Alerts",
+    "activity": "My activity"
+  },
+  "home": {
+    "title": "Facto",
+    "chips": {
+      "whistleblowing": "Whistleblowing",
+      "community": "Community",
+      "news": "News"
+    },
+    "empty": {
+      "title": "Nothing to read yet",
+      "body": "Cases from your area will appear here."
+    }
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search published cases",
+    "filter": "Filters",
+    "feed": "Feed",
+    "map": "Map",
+    "empty": {
+      "title": "Search runs on published cases only",
+      "body": "Your searches are never stored."
+    },
+    "mapEmpty": {
+      "title": "Map of areas",
+      "body": "Counts per area, never exact places. Areas with fewer than 5 cases show no count."
+    }
+  },
+  "create": {
+    "title": "New case",
+    "empty": {
+      "title": "Posting arrives in a later version",
+      "body": "You will choose a type, a category and an area from the list. Your location is never read."
+    }
+  },
+  "alerts": {
+    "title": "Alerts",
+    "all": "All",
+    "unread": "Unread",
+    "empty": {
+      "title": "No alerts",
+      "body": "Urgent public-safety alerts and updates on your own cases will appear here. Facto does not send push notifications."
+    }
+  },
+  "activity": {
+    "title": "My activity",
+    "subtitle": "Stored only on this phone.",
+    "cases": "My cases",
+    "drafts": "Drafts",
+    "saved": "Saved",
+    "empty": {
+      "title": "Nothing here yet",
+      "body": "Your cases, drafts and saved posts stay on this phone and are never synced."
+    }
+  }
+}
