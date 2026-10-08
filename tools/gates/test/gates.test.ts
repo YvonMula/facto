@@ -40,6 +40,31 @@ describe('no-location', () => {
     const root = makeRepo({ 'package.json': pkg(), [file]: content });
     expect(noLocation.run(root).length).toBeGreaterThan(0);
   });
+  it('allows location permissions only as explicit removals in blockedPermissions', () => {
+    const config = [
+      'export default {',
+      '  android: {',
+      "    permissions: ['android.permission.INTERNET'],",
+      '    blockedPermissions: [',
+      "      'android.permission.ACCESS_FINE_LOCATION',",
+      "      'android.permission.ACCESS_COARSE_LOCATION',",
+      '    ],',
+      '  },',
+      '};',
+    ].join('\n');
+    const root = makeRepo({ 'package.json': pkg(), 'apps/mobile/app.config.ts': config });
+    expect(noLocation.run(root)).toEqual([]);
+  });
+  it('still fails on a location permission requested in the same config', () => {
+    const config = "export default { android: { permissions: ['android.permission.ACCESS_FINE_LOCATION'], blockedPermissions: [] } };";
+    const root = makeRepo({ 'package.json': pkg(), 'apps/mobile/app.config.ts': config });
+    expect(noLocation.run(root)).toHaveLength(1);
+  });
+  it('still fails on other location code smuggled into a blockedPermissions block', () => {
+    const config = ['blockedPermissions: [', "  'android.permission.ACCESS_FINE_LOCATION', navigator.geolocation.getCurrentPosition(f),", ']'].join('\n');
+    const root = makeRepo({ 'package.json': pkg(), 'apps/mobile/app.config.ts': config });
+    expect(noLocation.run(root).length).toBeGreaterThan(0);
+  });
   it('fails on a direct location dependency', () => {
     const root = makeRepo({ 'package.json': pkg(), 'apps/mobile/package.json': pkg({ 'expo-location': '1' }) });
     expect(noLocation.run(root).some((v) => v.message.includes('expo-location'))).toBe(true);

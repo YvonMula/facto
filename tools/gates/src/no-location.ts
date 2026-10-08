@@ -1,4 +1,4 @@
-import { type Gate, listFiles, listPackages, lockfilePackages, scanLines, type Violation } from './lib.js';
+import { type Gate, listFiles, listPackages, lockfilePackages, read, scanLines, type Violation } from './lib.js';
 
 /** CLAUDE.md invariant 1, PRD 7.2 "Location isolation". */
 export const LOCATION_PACKAGES = [
@@ -19,11 +19,36 @@ const PATTERNS = [
   { re: /getCurrentPosition|watchPosition/, message: 'location API call' },
 ];
 
+/**
+ * Line numbers inside an Expo config `blockedPermissions: [ ... ]` array. Naming a location
+ * permission there removes it from the merged manifest, which PRD 7.2 requires, so only Android
+ * permission names on those lines are exempt; every other pattern still applies.
+ */
+export function blockedPermissionLines(text: string): Set<number> {
+  const lines = new Set<number>();
+  let inside = false;
+  text.split('\n').forEach((line, i) => {
+    if (!inside && /\bblockedPermissions\b["']?\s*:\s*\[/.test(line)) inside = true;
+    if (inside) {
+      lines.add(i + 1);
+      if (line.includes(']')) inside = false;
+    }
+  });
+  return lines;
+}
+
+const ANDROID_PERMISSION_ONLY = /^\s*['"]android\.permission\.ACCESS_(FINE|COARSE|BACKGROUND)_LOCATION['"],?\s*(\/\/.*)?$/;
+
 export const noLocation: Gate = {
   name: 'no-location',
   description: 'No location permission, SDK or API call anywhere (invariant 1)',
   run(root) {
-    const out: Violation[] = scanLines(this.name, root, listFiles(root), PATTERNS);
+    const out: Violation[] = scanLines(this.name, root, listFiles(root), PATTERNS).filter((v) => {
+      if (!/(^|\/)app\.(config\.(ts|js)|json)$/.test(v.file) || v.line === undefined) return true;
+      const text = read(root, v.file);
+      const exempt = blockedPermissionLines(text).has(v.line) && ANDROID_PERMISSION_ONLY.test(text.split('\n')[v.line - 1] ?? '');
+      return !exempt;
+    });
     for (const pkg of listPackages(root)) {
       for (const dep of Object.keys({ ...pkg.dependencies, ...pkg.devDependencies })) {
         if (LOCATION_PACKAGES.includes(dep)) out.push({ gate: this.name, file: pkg.file, message: `location package "${dep}"` });
