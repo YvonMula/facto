@@ -59,4 +59,19 @@ pnpm workspaces. TypeScript strict mode everywhere.
 
 ## Commands
 
-Fill in once the repo is scaffolded (install, dev, test, lint, CI checks, mobile build).
+Set `EXPO_NO_TELEMETRY=1` in your shell before running any Expo command.
+
+```sh
+pnpm install                                # install all workspaces (Node 22, pnpm 10)
+pnpm typecheck                              # tsc --noEmit in every workspace
+pnpm test                                   # Vitest in every workspace
+pnpm --filter @facto/mobile prebuild        # generate apps/mobile/android and ios (needed by the permissions gate)
+pnpm gates                                  # run every invariant gate; `pnpm gates no-location claims` runs a subset
+pnpm --filter @facto/crypto vectors         # regenerate packages/crypto/test-vectors.json (a crypto change)
+pnpm --filter @facto/mobile start           # Metro for a development build (expo-dev-client, Phase 3)
+cd spikes/arti && cargo build --release     # Arti spike (ADR 0007)
+```
+
+CI (`.github/workflows/ci.yml`) runs install, typecheck, test, prebuild and gates on every push.
+
+Spikes live in `packages/crypto/spikes/` and `spikes/`. They are not exported or shipped until their ADR is accepted.
