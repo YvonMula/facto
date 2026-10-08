@@ -8,3 +8,4 @@ export * from './envelope.js';
 export * from './replay.js';
 export * from './local-keys.js';
 export { PWHASH_SALT_BYTES, PWHASH_OPS_INTERACTIVE, PWHASH_MEM_INTERACTIVE, AEAD_KEY_BYTES, AEAD_NONCE_BYTES } from './backend.js';
+export { createReactNativeBackend, type ReactNativeSodium } from './backend-rn.js';

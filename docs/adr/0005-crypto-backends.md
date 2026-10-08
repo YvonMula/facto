@@ -27,3 +27,14 @@ The phone and the servers must compute identical keys, nullifiers and signatures
 - No hand-written primitive anywhere; base64url, hex and the length-prefixed encoder are plain byte formatting.
 - The phone backend can only be verified on a device or emulator build. Until then, the vectors are proven on Node only. Phase 3 gate: run the vector suite on Hermes.
 - If a future `libsodium-wrappers` release wraps HKDF, the raw calls are replaced and the vectors must not change.
+
+## Addendum (2026-10-08): phone backend implemented
+
+`packages/crypto/src/backend-rn.ts` implements `SodiumBackend` over an injected `react-native-libsodium` module, with these binding gaps covered:
+
+- HKDF uses the binding's `_unstable_crypto_kdf_hkdf_sha256_*` functions. `info` is passed as a string, so the adapter accepts printable ASCII only (ADR 0008 makes every Facto `info` ASCII).
+- HMAC-SHA256 = HKDF-Extract(salt = key, ikm = message).
+- AEAD associated data must be a string in the binding; Facto uses ASCII purpose labels.
+- The binding has no `memcmp` or `memzero`. The adapter uses a constant-time XOR comparison and `fill(0)`. JavaScript cannot guarantee that the engine keeps no other copy of a secret; that limit is listed for the external review.
+
+`test/backend-rn.test.ts` runs the whole vector suite through the adapter on Node, using a stand-in with the binding's exact signatures and quirks, and checks interoperability with the Node backend. A run on Hermes with the real native module is still required (Phase 3 gate).

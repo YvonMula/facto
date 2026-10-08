@@ -12,3 +12,4 @@ Every change marked `NEEDS-CRYPTO-REVIEW` is listed here until a human approves 
 | 2026-10-08 | ADR 0006 spike: RFC 9578 type 2 tokens via `@cloudflare/privacypass-ts`, purpose bound through `origin_info` (`packages/crypto/spikes/tokens`) | Direction accepted by owner; spike only; external review pending |
 | 2026-10-08 | ADR 0008: per-case root key (author and identity keys derive from it) and ASCII-only HKDF info; vectors regenerated | Accepted by owner; external review pending |
 | 2026-10-08 | `local-keys.ts`: SQLCipher key wrapped with Argon2id(PIN, INTERACTIVE) + XChaCha20-Poly1305, purpose-bound AD; duress verifier always stored (dummy when unset) | Proposed |
+| 2026-10-08 | `backend-rn.ts`: phone SodiumBackend over react-native-libsodium (HMAC via HKDF-Extract, JS constant-time memcmp, fill(0) memzero, ASCII-only info/AD) | Proposed |

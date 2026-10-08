@@ -86,7 +86,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | Phase | State | Notes |
 | --- | --- | --- |
 | CI gates (before features) | ✅ Done | 7 gates in `tools/gates`: no-location, no-telemetry, no-identifiers, deps-reviewed, permissions, i18n, claims |
-| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node backend). Missing: phone `SodiumBackend`, SQLCipher store, panic wipe with key destruction, per-case recovery codes, external crypto review (gate) |
+| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node backend). Phone `SodiumBackend` adapter done (vectors pass via a Node stand-in). Missing: SQLCipher store, panic wipe with key destruction, per-case recovery codes, external crypto review (gate) |
 | 2. Backend core | ⬜ Not started | |
 | 3. App V1 | 🟡 Shell only | `apps/mobile` shell built early on request; no feature code |
 | 4–8. Dashboard, pilot, audit, launch, after launch | ⬜ Not started | |
@@ -97,7 +97,7 @@ _Last updated: 2026-10-08 · working branch `claude/new-session-2dnc6z` (no PR y
 | --- | --- | --- |
 | `tools/gates` | Invariant gates + fixture tests | 49 |
 | `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
-| `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), `test-vectors.json` | 43 |
+| `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), phone backend adapter (`backend-rn.ts`), `test-vectors.json` | 49 |
 | `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
 | `apps/mobile` | Expo SDK 57 shell: language → 3 safety screens → tabs Home · Search · + · Alerts · My activity; FR/EN; INTERNET only | typecheck + Android bundle |
 | `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
@@ -130,14 +130,14 @@ Decided in conversation with the owner (not ADRs):
 - Arti bootstrap to the Tor network (container has no direct TCP to relays).
 - Arti Android build (no Android NDK in the container).
 - Privacy Pass on Hermes (no `crypto.subtle`; phone path undecided).
-- Phone crypto backend against `test-vectors.json` (backend not written).
+- Phone crypto backend on Hermes with the real `react-native-libsodium` (vectors only pass through a Node stand-in with the same API).
 - The app on a real device or emulator.
 - GitHub CI has not run (no PR opened yet).
 - Permissions gate checks the prebuild manifest, not yet the Gradle-merged release manifest.
 
 ### Next steps
 
-1. Phone `SodiumBackend` on `react-native-libsodium`; run the vectors on Hermes.
+1. Run the vector suite on Hermes with the real `react-native-libsodium` (needs a device build).
 2. SQLCipher local store (`op-sqlite`) and panic wipe (keys first, then data).
 3. Per-case recovery codes (PRD 4.7).
 4. Prepare the external cryptographic review package (phase 1 gate).
