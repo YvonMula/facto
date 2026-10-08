@@ -238,7 +238,7 @@ This is how a username stays consistent inside one case and means nothing outsid
 | --- | --- | --- |
 | Derive | `seed = HKDF(device_secret, "facto/case-identity/v1" + case_id)` → Ed25519 key pair | — |
 | Claim name | Send `{case_id, public_key, display_name}`, signed | Stores the row; `display_name` unique per case; `public_key` unique per case |
-| Comment | Sign `{case_id, parent_id, body, timestamp}` with the case key | Verifies the signature, stores comment with `public_key` |
+| Comment | Sign `{case_id, parent_id, body, created_10min}` with the case key (coarse bucket only, ADR 0001) | Verifies the signature, stores comment with `public_key` |
 | Edit or delete | Sign the change with the same key | Accepts only if the key matches |
 | Recognise own comments | Derive the key for the open case and compare | — |
 
@@ -316,7 +316,7 @@ Every write (case, comment, vote, flag, edit) leaves the phone as a sealed envel
 | Version | Format version, so the envelope can evolve |
 | Message ID | Random 128-bit value; never derived from the device or the content |
 | Expiry (TTL) | Coarse day; default 7 days for cases, 2 days for votes and comments |
-| Sealed payload | X25519 sealed box to the current intake public key; inside is the signed case, comment or vote plus its tokens |
+| Sealed payload | libsodium sealed box (`crypto_box_seal`: X25519 + XSalsa20-Poly1305, ADR 0002) to the current intake public key; inside is the signed case, comment or vote plus its tokens |
 | Padding | Padded to fixed size buckets (4 KB for text; media sent as fixed-size encrypted chunks) |
 | Sender, device, route, location | Never present |
 
@@ -431,7 +431,7 @@ Security rests on three layers: the phone keeps the secrets, the server keeps no
 ### 7.1 Cryptography
 
 - Only audited libraries: libsodium (`react-native-libsodium` on the phone, `libsodium-wrappers` on the server), plus a maintained Privacy Pass implementation for vote tokens. No custom cryptography.
-- Primitives: Ed25519 signatures, X25519 + XChaCha20-Poly1305 sealed boxes, HKDF-SHA256, HMAC-SHA256, Argon2id for the PIN.
+- Primitives: Ed25519 signatures, X25519 + XSalsa20-Poly1305 sealed boxes (libsodium `crypto_box_seal`, ADR 0002), XChaCha20-Poly1305 for local encryption, HKDF-SHA256, HMAC-SHA256, Argon2id for the PIN.
 - Every signed payload carries a version and purpose label, so keys from one feature can never be replayed in another.
 - Key rotation for the token issuer and moderator keys is scheduled and documented before launch.
 
