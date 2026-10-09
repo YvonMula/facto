@@ -1,0 +1,86 @@
+name: Android self-test
+
+# Builds the app with the device self-test enabled and runs it on an Android emulator:
+# Hermes + react-native-libsodium against the test vectors, SQLCipher encryption, Keystore
+# deletion, PIN counter persistence, Argon2id timing. Also checks the Gradle-merged manifest
+# against the PRD 7.2 permission matrix. Never produces a release artifact.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  EXPO_NO_TELEMETRY: 1
+  # Inlined into the JS bundle at build time; enables src/selftest. Never set for releases.
+  EXPO_PUBLIC_FACTO_SELFTEST: 1
+
+jobs:
+  emulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+
+      - run: pnpm install --frozen-lockfile
+      - name: Unpack and check react-native-libsodium binaries
+        # The package's postinstall (allowed in package.json) can stop part-way under pnpm;
+        # re-run it explicitly and fail early if any Android ABI is missing.
+        working-directory: node_modules/react-native-libsodium
+        run: |
+          tar -xzf libsodium/build.tgz --directory ./libsodium 2>/dev/null
+          for abi in armv7-a 'armv8-a+crypto' i686 westmere; do
+            test -f "libsodium/build/libsodium-android-$abi/lib/libsodium.so" || { echo "missing libsodium for $abi"; exit 1; }
+          done
+      - name: Generate native projects
+        run: pnpm --filter @facto/mobile prebuild
+
+      - name: Build release APK (x86_64, JS bundled, self-test on)
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleRelease -PreactNativeArchitectures=x86_64 --no-daemon
+
+      - name: Permission matrix on the merged manifest
+        run: |
+          MERGED=$(find apps/mobile/android/app/build/intermediates -path '*release*' -name AndroidManifest.xml | grep -i merged | head -n1)
+          echo "Merged manifest: $MERGED"
+          FACTO_MERGED_MANIFEST="$PWD/$MERGED" pnpm gates permissions
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run self-test on the emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          arch: x86_64
+          target: default
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: .github/scripts/run-selftest.sh apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Keep the self-test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-selftest
+          path: |
+            selftest-logcat.txt
+            selftest-result.json
+          if-no-files-found: ignore

@@ -1,0 +1,144 @@
+{
+  "language": {
+    "title": "Choose your language",
+    "subtitle": "You can change it later in Settings.",
+    "fr": "Français",
+    "en": "English"
+  },
+  "safety": {
+    "step": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "protects": {
+      "title": "What Facto does not collect",
+      "body": "Facto does not ask for your name, phone number, email or location, and does not store your IP address. There is no account. Your posts, comments and votes are not linked to each other on our servers."
+    },
+    "limits": {
+      "title": "What Facto cannot protect",
+      "body": "The content itself can identify you. A detail only a few people know can point to you. Facto also cannot protect a phone that is already compromised, and without Tor your mobile operator can see that you use Facto."
+    },
+    "panic": {
+      "title": "Erase everything quickly",
+      "body": "Long-press the Facto logo and confirm to erase all data and keys on this phone. The app then starts again as if it was just installed. If you set a PIN, three wrong PINs in a row also erase everything."
+    }
+  },
+  "tabs": {
+    "home": "Home",
+    "search": "Search",
+    "create": "New case",
+    "alerts": "Alerts",
+    "activity": "My activity"
+  },
+  "home": {
+    "title": "Facto",
+    "chips": {
+      "whistleblowing": "Whistleblowing",
+      "community": "Community",
+      "news": "News"
+    },
+    "empty": {
+      "title": "Nothing to read yet",
+      "body": "Cases from your area will appear here."
+    }
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search published cases",
+    "filter": "Filters",
+    "feed": "Feed",
+    "map": "Map",
+    "empty": {
+      "title": "Search runs on published cases only",
+      "body": "Your searches are never stored."
+    },
+    "mapEmpty": {
+      "title": "Map of areas",
+      "body": "Counts per area, never exact places. Areas with fewer than 5 cases show no count."
+    }
+  },
+  "create": {
+    "title": "New case",
+    "empty": {
+      "title": "Posting arrives in a later version",
+      "body": "You will choose a type, a category and an area from the list. Your location is never read."
+    }
+  },
+  "alerts": {
+    "title": "Alerts",
+    "all": "All",
+    "unread": "Unread",
+    "empty": {
+      "title": "No alerts",
+      "body": "Urgent public-safety alerts and updates on your own cases will appear here. Facto does not send push notifications."
+    }
+  },
+  "activity": {
+    "title": "My activity",
+    "subtitle": "Stored only on this phone.",
+    "cases": "My cases",
+    "drafts": "Drafts",
+    "saved": "Saved",
+    "empty": {
+      "title": "Nothing here yet",
+      "body": "Your cases, drafts and saved posts stay on this phone and are never synced."
+    }
+  },
+  "pin": {
+    "title": "Protect Facto with a PIN",
+    "body": "Optional. The PIN is asked each time you open Facto. Without it, your saved data cannot be read. Three wrong PINs in a row erase everything on this phone.",
+    "enter": "PIN (6 to 12 digits)",
+    "confirm": "Repeat the PIN",
+    "duressToggle": "Also set a duress PIN",
+    "duressBody": "If someone forces you to unlock Facto, enter the duress PIN instead. Facto erases everything and opens an empty app.",
+    "duressEnter": "Duress PIN (different from your PIN)",
+    "save": "Save PIN",
+    "skip": "Not now",
+    "errors": {
+      "format": "Use 6 to 12 digits.",
+      "mismatch": "The two PINs do not match.",
+      "sameAsPin": "The duress PIN must be different from your PIN."
+    }
+  },
+  "lock": {
+    "title": "Enter your PIN",
+    "unlock": "Unlock",
+    "wrong": "Wrong PIN.",
+    "working": "Checking…"
+  },
+  "error": {
+    "storage": "Facto could not open its secure storage on this phone."
+  },
+  "wipe": {
+    "title": "Erase everything?",
+    "body": "All data and keys on this phone will be erased. This cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Erase everything"
+  },
+  "recovery": {
+    "restoreLink": "Restore a case with a code",
+    "restoreTitle": "Restore a case",
+    "restoreBody": "Enter the recovery code you saved for one case. It gives back that case and the name you used in it, nothing else. Votes are not restored.",
+    "codeLabel": "Recovery code",
+    "restore": "Restore",
+    "restored": "Case restored. You can now edit it and comment under your name in it.",
+    "done": "Done",
+    "errors": {
+      "format": "This code is incomplete or has invalid characters.",
+      "checksum": "This code has a typing mistake. Check each group.",
+      "version": "This code comes from a newer version of Facto."
+    },
+    "showTitle": "Recovery code for this case",
+    "showWarning": "Anyone with this code can act as you in this case only. Write it down and keep it somewhere safe. Facto cannot show it again if you erase this phone.",
+    "showBody": "Write the code down by hand. It is not copied to the clipboard."
+  },
+  "selftest": {
+    "title": "Facto device self-test",
+    "running": "Running checks…",
+    "allPass": "All checks passed",
+    "someFail_one": "{{count}} check failed",
+    "someFail_other": "{{count}} checks failed",
+    "pass": "PASS",
+    "fail": "FAIL",
+    "argon2": "PIN key wrapping (Argon2id): {{ms}} ms",
+    "crashed": "The self-test stopped: {{detail}}"
+  }
+}

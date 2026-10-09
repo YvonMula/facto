@@ -1,0 +1,144 @@
+{
+  "language": {
+    "title": "Choisissez votre langue",
+    "subtitle": "Vous pourrez la changer plus tard dans les réglages.",
+    "fr": "Français",
+    "en": "English"
+  },
+  "safety": {
+    "step": "Étape {{current}} sur {{total}}",
+    "next": "Suivant",
+    "protects": {
+      "title": "Ce que Facto ne collecte pas",
+      "body": "Facto ne demande pas votre nom, votre numéro de téléphone, votre e-mail ni votre position, et ne conserve pas votre adresse IP. Il n’y a pas de compte. Sur nos serveurs, vos publications, commentaires et votes ne sont pas liés entre eux."
+    },
+    "limits": {
+      "title": "Ce que Facto ne peut pas protéger",
+      "body": "Le contenu lui-même peut vous identifier. Un détail que peu de personnes connaissent peut mener à vous. Facto ne peut pas non plus protéger un téléphone déjà compromis, et sans Tor votre opérateur mobile peut voir que vous utilisez Facto."
+    },
+    "panic": {
+      "title": "Tout effacer rapidement",
+      "body": "Appuyez longuement sur le logo Facto et confirmez pour effacer toutes les données et les clés de ce téléphone. L’application redémarre alors comme si elle venait d’être installée. Si vous définissez un code, trois codes incorrects de suite effacent aussi tout."
+    }
+  },
+  "tabs": {
+    "home": "Accueil",
+    "search": "Recherche",
+    "create": "Nouveau cas",
+    "alerts": "Alertes",
+    "activity": "Mon activité"
+  },
+  "home": {
+    "title": "Facto",
+    "chips": {
+      "whistleblowing": "Signalements",
+      "community": "Communauté",
+      "news": "Actualités"
+    },
+    "empty": {
+      "title": "Rien à lire pour l’instant",
+      "body": "Les cas de votre zone apparaîtront ici."
+    }
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher dans les cas publiés",
+    "filter": "Filtres",
+    "feed": "Fil",
+    "map": "Carte",
+    "empty": {
+      "title": "La recherche porte uniquement sur les cas publiés",
+      "body": "Vos recherches ne sont jamais conservées."
+    },
+    "mapEmpty": {
+      "title": "Carte des zones",
+      "body": "Des nombres par zone, jamais de lieux précis. Les zones de moins de 5 cas n’affichent aucun nombre."
+    }
+  },
+  "create": {
+    "title": "Nouveau cas",
+    "empty": {
+      "title": "La publication arrive dans une prochaine version",
+      "body": "Vous choisirez un type, une catégorie et une zone dans la liste. Votre position n’est jamais lue."
+    }
+  },
+  "alerts": {
+    "title": "Alertes",
+    "all": "Toutes",
+    "unread": "Non lues",
+    "empty": {
+      "title": "Aucune alerte",
+      "body": "Les alertes urgentes de sécurité publique et les nouvelles de vos propres cas apparaîtront ici. Facto n’envoie pas de notifications push."
+    }
+  },
+  "activity": {
+    "title": "Mon activité",
+    "subtitle": "Conservé uniquement sur ce téléphone.",
+    "cases": "Mes cas",
+    "drafts": "Brouillons",
+    "saved": "Enregistrés",
+    "empty": {
+      "title": "Rien pour l’instant",
+      "body": "Vos cas, brouillons et publications enregistrées restent sur ce téléphone et ne sont jamais synchronisés."
+    }
+  },
+  "pin": {
+    "title": "Protéger Facto avec un code",
+    "body": "Facultatif. Le code est demandé à chaque ouverture de Facto. Sans lui, vos données enregistrées ne peuvent pas être lues. Trois codes incorrects de suite effacent tout sur ce téléphone.",
+    "enter": "Code (6 à 12 chiffres)",
+    "confirm": "Répétez le code",
+    "duressToggle": "Définir aussi un code de contrainte",
+    "duressBody": "Si quelqu’un vous force à ouvrir Facto, saisissez le code de contrainte. Facto efface tout et ouvre une application vide.",
+    "duressEnter": "Code de contrainte (différent de votre code)",
+    "save": "Enregistrer le code",
+    "skip": "Plus tard",
+    "errors": {
+      "format": "Utilisez 6 à 12 chiffres.",
+      "mismatch": "Les deux codes ne correspondent pas.",
+      "sameAsPin": "Le code de contrainte doit être différent de votre code."
+    }
+  },
+  "lock": {
+    "title": "Saisissez votre code",
+    "unlock": "Déverrouiller",
+    "wrong": "Code incorrect.",
+    "working": "Vérification…"
+  },
+  "error": {
+    "storage": "Facto n’a pas pu ouvrir son stockage sécurisé sur ce téléphone."
+  },
+  "wipe": {
+    "title": "Tout effacer ?",
+    "body": "Toutes les données et les clés de ce téléphone seront effacées. C’est irréversible.",
+    "cancel": "Annuler",
+    "confirm": "Tout effacer"
+  },
+  "recovery": {
+    "restoreLink": "Récupérer un cas avec un code",
+    "restoreTitle": "Récupérer un cas",
+    "restoreBody": "Saisissez le code de récupération enregistré pour un cas. Il rend ce cas et le nom que vous y utilisiez, rien d’autre. Les votes ne sont pas récupérés.",
+    "codeLabel": "Code de récupération",
+    "restore": "Récupérer",
+    "restored": "Cas récupéré. Vous pouvez à nouveau le modifier et y commenter sous votre nom.",
+    "done": "Terminé",
+    "errors": {
+      "format": "Ce code est incomplet ou contient des caractères non valides.",
+      "checksum": "Ce code contient une faute de frappe. Vérifiez chaque groupe.",
+      "version": "Ce code vient d’une version plus récente de Facto."
+    },
+    "showTitle": "Code de récupération de ce cas",
+    "showWarning": "Toute personne ayant ce code peut agir en votre nom dans ce cas uniquement. Notez-le et gardez-le en lieu sûr. Facto ne pourra plus l’afficher si vous effacez ce téléphone.",
+    "showBody": "Recopiez le code à la main. Il n’est pas copié dans le presse-papiers."
+  },
+  "selftest": {
+    "title": "Autotest de l’appareil Facto",
+    "running": "Vérifications en cours…",
+    "allPass": "Toutes les vérifications ont réussi",
+    "someFail_one": "{{count}} vérification a échoué",
+    "someFail_other": "{{count}} vérifications ont échoué",
+    "pass": "OK",
+    "fail": "ÉCHEC",
+    "argon2": "Protection de la clé par code (Argon2id) : {{ms}} ms",
+    "crashed": "L’autotest s’est arrêté : {{detail}}"
+  }
+}

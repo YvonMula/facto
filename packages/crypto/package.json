@@ -1,0 +1,28 @@
+{
+  "name": "@facto/crypto",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./node": "./src/backend-node.ts",
+    "./vectors": "./scripts/compute-vectors.ts",
+    "./test-vectors.json": "./test-vectors.json"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "vectors": "tsx scripts/generate-vectors.ts"
+  },
+  "dependencies": {
+    "@facto/schema": "workspace:*",
+    "libsodium-sumo": "0.8.4",
+    "libsodium-wrappers-sumo": "0.8.4"
+  },
+  "devDependencies": {
+    "@cloudflare/privacypass-ts": "0.9.0",
+    "@types/libsodium-wrappers-sumo": "0.8.2",
+    "@types/node": "22.20.5"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "facto",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "gates": "pnpm --filter @facto/gates run gates"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vitest": "4.1.11",
+    "tsx": "4.23.15"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "react-native-libsodium"
+    ]
+  }
+}

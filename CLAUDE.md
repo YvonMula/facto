@@ -50,6 +50,7 @@ pnpm workspaces. TypeScript strict mode everywhere.
 - **Crypto, schema and security changes** follow the `facto-crypto-change`, `facto-schema-change` and `facto-security-review` skills. Run `facto-security-review` before every commit.
 - **Never invent security mechanisms.** Use the ones the PRD names; anything new goes into an ADR in `docs/adr/` and waits for human approval.
 - **Record decisions.** Any choice the PRD leaves open becomes an ADR.
+- **Keep "Project status" current.** Any commit that changes the project's state (phase step done, ADR proposed/accepted/rejected, dependency added, spike finished, new blocker or open question) updates the "Project status" section below in the same commit. Before ending a session, check the section still matches the repo.
 
 ## Language and wording
 
@@ -59,4 +60,127 @@ pnpm workspaces. TypeScript strict mode everywhere.
 
 ## Commands
 
-Fill in once the repo is scaffolded (install, dev, test, lint, CI checks, mobile build).
+Set `EXPO_NO_TELEMETRY=1` in your shell before running any Expo command.
+
+```sh
+pnpm install                                # install all workspaces (Node 22, pnpm 10)
+pnpm typecheck                              # tsc --noEmit in every workspace
+pnpm test                                   # Vitest in every workspace
+pnpm --filter @facto/mobile prebuild        # generate apps/mobile/android and ios (needed by the permissions gate)
+pnpm gates                                  # run every invariant gate; `pnpm gates no-location claims` runs a subset
+pnpm --filter @facto/crypto vectors         # regenerate packages/crypto/test-vectors.json (a crypto change)
+pnpm --filter @facto/mobile start           # Metro for a development build (expo-dev-client, Phase 3)
+cd spikes/arti && cargo build --release     # Arti spike (ADR 0007)
+```
+
+CI (`.github/workflows/ci.yml`) runs install, typecheck, test, prebuild and gates on every push. `.github/workflows/android-selftest.yml` builds a self-test APK (x86_64), checks the merged manifest, and runs the device self-test on an API 31 emulator (`.github/scripts/run-selftest.sh` reads the `FACTO_SELFTEST` logcat line).
+
+Metro's cache does not key on `EXPO_PUBLIC_*` variables: after changing `EXPO_PUBLIC_FACTO_SELFTEST` locally, bundle with `--clear`.
+
+Building the self-test APK locally (while GitHub Actions is unavailable): Android SDK in `~/android-sdk` (platform 36, build-tools 36.0.0, NDK 27.1.12297006, CMake 3.22.1), and a Gradle init script in `~/.gradle/init.d/` that puts Google Maven and Google's Maven Central mirror first, because Maven Central rate-limits the Claude container (HTTP 429). Both live outside the repo. Then:
+
+```sh
+EXPO_PUBLIC_FACTO_SELFTEST=1 pnpm --filter @facto/mobile prebuild
+cd apps/mobile/android && ANDROID_HOME=~/android-sdk EXPO_PUBLIC_FACTO_SELFTEST=1 NODE_ENV=production \
+  ./gradlew assembleRelease -PreactNativeArchitectures=x86_64 -Pexpo.useLegacyPackaging=true
+FACTO_MERGED_MANIFEST=$PWD/app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml pnpm gates permissions
+```
+
+If the build reports a missing `libsodium.so`, re-run `tar -xzf libsodium/build.tgz --directory ./libsodium` inside `node_modules/react-native-libsodium`.
+
+Spikes live in `packages/crypto/spikes/` and `spikes/`. They are not exported or shipped until their ADR is accepted.
+
+## Project status
+
+_Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` · PR: YvonMula/facto#1._
+
+### Phases (PRD 10.2)
+
+| Phase | State | Notes |
+| --- | --- | --- |
+| CI gates (before features) | ✅ Done | 7 gates in `tools/gates`: no-location, no-telemetry, no-identifiers, deps-reviewed, permissions, i18n, claims |
+| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN, 3-attempt limit (ADR 0009). Per-case recovery codes (format, restore screen, show screen) done. Native modules verified on an Android emulator (BlueStacks, all 7 self-test checks PASS). Missing: real-phone run, external crypto review (gate) |
+| 2. Backend core | ⬜ Not started | |
+| 3. App V1 | 🟡 Shell only | `apps/mobile` shell built early on request; no feature code |
+| 4–8. Dashboard, pilot, audit, launch, after launch | ⬜ Not started | |
+
+### What exists
+
+| Path | Content | Tests |
+| --- | --- | --- |
+| `tools/gates` | Invariant gates + fixture tests; permissions gate also checks a Gradle-merged manifest (`FACTO_MERGED_MANIFEST`) | 53 |
+| `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
+| `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), phone backend adapter (`backend-rn.ts`), recovery codes (`recovery.ts`), `test-vectors.json` | 60 |
+| `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
+| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; recovery: restore from My activity, show screen ready for Phase 3 case pages, single key entry point `src/secure/case-keys.ts`; device self-test (`src/selftest`, only in builds with `EXPO_PUBLIC_FACTO_SELFTEST=1`, which show a PASS/FAIL results screen instead of the app; absent from normal bundles); FR/EN; INTERNET only | 28 + typecheck + Android bundle |
+| `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
+
+### Decisions
+
+| ADR | Topic | Status |
+| --- | --- | --- |
+| 0001 | Signed payloads carry only coarse time buckets | Accepted (owner) |
+| 0002 | Envelopes use standard `crypto_box_seal` | Accepted (owner) |
+| 0003 | Canonical length-prefixed signing input | Accepted (owner) |
+| 0004 | Monorepo toolchain (pnpm, Vitest, tsx) | Accepted (owner) |
+| 0005 | `SodiumBackend`; raw libsodium HKDF on Node; HMAC via HKDF-Extract on phone | Accepted (owner) |
+| 0006 | Privacy Pass tokens, RFC 9578 type 2 | Direction accepted (owner); phone path open |
+| 0007 | Embedded Tor with Arti | Direction accepted (owner); Android build and bootstrap unverified |
+| 0008 | Per-case root key; ASCII-only HKDF info | Accepted (owner); vectors regenerated |
+| 0009 | Local unlock policy: 3 PIN attempts then wipe, no warning; long-press wipe asks first | Accepted (owner) |
+| 0010 | Per-case recovery code: Crockford base32, 85 chars, 4-byte checksum | Accepted (owner) |
+
+Crypto items waiting for review: `docs/crypto-review-queue.md`.
+
+Decided in conversation with the owner (not ADRs):
+- Bottom nav: Home · Search · + · Alerts · My activity.
+- The old `facto.app` Firebase prototype is abandoned, nothing migrated.
+- Before source publication, move to a fresh repo under a pseudonymous org with clean history; keep personal data out of code and commits.
+- 2026-10-09: the owner made `YvonMula/facto` **public** until the project is done, so CI can run (private-repo Actions were blocked by billing). Known risk: PRD 7.4 operator anonymity — the repo publicly links the owner's GitHub account to Facto. The move to a pseudonymous repo before launch still stands.
+- Tor (Arti) and vote tokens are tackled in Phase 1 as spikes.
+- Device language comes from `Intl`, not `expo-localization`.
+- App state lives only in the SQLCipher database; nothing is written unencrypted to disk.
+- No biometric unlock in V1 (keeps the Face ID usage key out of the permission matrix).
+- Duress PIN: wipe, then open an empty normal-looking app (PRD 7.2 wording); long-press wipe returns to first launch (PRD 4.8).
+- The first real Gradle build showed expo-secure-store merging USE_BIOMETRIC and USE_FINGERPRINT into the app; both are now blocked and the gate requires their removal.
+- 3 wrong PINs in a row wipe the phone, with no attempts-left warning; long-press wipe asks for confirmation (ADR 0009).
+
+### Verified on Android (BlueStacks, 2026-10-09)
+
+Self-test APK `facto-selftest-x86_64.apk` (SHA-256 `9d6595a6e2dcdd4ca9504b874f0fa46b64b6b452ae25be9fcf97667a6f8e56ca`, built from commit `a76ad2f`), run by the owner on BlueStacks 5.22, 64-bit Android x86_64. **All 7 checks PASS:**
+
+| Check | Proves |
+| --- | --- |
+| vectors | Hermes + the real `react-native-libsodium` reproduce `test-vectors.json` byte for byte (keys, nullifiers, signatures, recovery codes, RFC HMAC, envelope opening) |
+| sqlcipher | SQLCipher is linked; the raw-key `x'…'` form works; the right key reads back, a wrong key and no key both fail (file is encrypted) |
+| db-delete | `db.delete()` removes the database; a reopened one is empty |
+| keystore-delete | Keystore set/get/delete; a deleted value reads back as null |
+| argon2id | PIN key wrapping round-trips; **559 ms** at INTERACTIVE limits |
+| pin-counter | The PIN failure counter persists across app restarts (new `Vault` instances); the 3rd wrong PIN is `exhausted` |
+| recovery | Recovery code round-trip on the phone runtime |
+
+Caveats: BlueStacks' Keystore is software-backed, and it runs on a desktop CPU, so the Argon2id time is faster than on a low-end phone. Also verified on the real Gradle build: the merged manifest matches the PRD 7.2 matrix (INTERNET plus the app-private receiver permission) after blocking USE_BIOMETRIC and USE_FINGERPRINT.
+
+### Not verified yet
+
+- Arti bootstrap to the Tor network (container has no direct TCP to relays).
+- Arti Android build (no Android NDK in the container).
+- Privacy Pass on Hermes (no `crypto.subtle`; phone path undecided).
+- On a real phone: hardware-backed Keystore deletion, Argon2id time on a 2 GB phone, locking when the app goes to the background, the PIN failure counter surviving the app being killed *during* the check (only restart persistence is proven), and WAL/SHM files gone at file level after `db.delete()`.
+- iOS: nothing has run on iOS yet.
+- GitHub CI cannot run: the owner's GitHub account is locked over a declined card payment (affects public repos too). Workaround used: the self-test APK is built in the Claude container and run by the owner on BlueStacks (see Commands).
+
+### Next steps
+
+1. Prepare the external cryptographic review package (phase 1 gate).
+2. Run the same self-test APK on a real low-end Android phone when one is available (hardware Keystore, 2 GB timing).
+3. Plan Phase 2: API + intake, issuer, workers, DB migrations.
+4. CI resumes once the GitHub billing lock is cleared, or after moving to a pseudonymous account/organisation.
+
+### Open questions
+
+- PRD 10.4 list (legal entity, hosting, funding, limits, urgent-alert policy, attestation vs proof-of-work, reporting obligations).
+- rustls crypto provider for Arti (`ring` proposed).
+- Phone implementation for Privacy Pass: WebCrypto polyfill or Rust native module.
+- `react-native-libsodium` ships prebuilt libsodium binaries (unpacked by its allowed install script). Before launch: rebuild them from the minisign-verified upstream source and compare, or vendor our own build (PRD 7.5 supply chain).
+- Screenshot blocking (PRD 7.2, FLAG_SECURE) on the recovery-code and PIN screens: needs a reviewed approach that adds no permission outside the matrix.
