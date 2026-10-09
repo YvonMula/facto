@@ -154,4 +154,5 @@ Decided in conversation with the owner (not ADRs):
 - PRD 10.4 list (legal entity, hosting, funding, limits, urgent-alert policy, attestation vs proof-of-work, reporting obligations).
 - rustls crypto provider for Arti (`ring` proposed).
 - Phone implementation for Privacy Pass: WebCrypto polyfill or Rust native module.
+- `react-native-libsodium` ships prebuilt libsodium binaries (unpacked by its allowed install script). Before launch: rebuild them from the minisign-verified upstream source and compare, or vendor our own build (PRD 7.5 supply chain).
 - Screenshot blocking (PRD 7.2, FLAG_SECURE) on the recovery-code and PIN screens: needs a reviewed approach that adds no permission outside the matrix.
