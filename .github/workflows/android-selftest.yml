@@ -37,6 +37,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - run: pnpm install --frozen-lockfile
+      - name: Unpack and check react-native-libsodium binaries
+        # The package's postinstall (allowed in package.json) can stop part-way under pnpm;
+        # re-run it explicitly and fail early if any Android ABI is missing.
+        working-directory: node_modules/react-native-libsodium
+        run: |
+          tar -xzf libsodium/build.tgz --directory ./libsodium 2>/dev/null
+          for abi in armv7-a 'armv8-a+crypto' i686 westmere; do
+            test -f "libsodium/build/libsodium-android-$abi/lib/libsodium.so" || { echo "missing libsodium for $abi"; exit 1; }
+          done
       - name: Generate native projects
         run: pnpm --filter @facto/mobile prebuild
 
