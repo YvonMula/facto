@@ -1,6 +1,6 @@
 import { createNodeBackend } from '@facto/crypto/node';
 import { describe, expect, it } from 'vitest';
-import { formatResult, runSelfTest } from '../src/selftest/run';
+import { formatResult, runSelfTest, summarise } from '../src/selftest/run';
 import { FakeDbFiles, FakeKeyStore } from './fakes';
 
 function deps(files = new FakeDbFiles([])) {
@@ -45,5 +45,12 @@ describe('device self-test harness', () => {
     const line = formatResult(await runSelfTest(await deps()));
     expect(line.startsWith('FACTO_SELFTEST {')).toBe(true);
     expect(line).not.toMatch(/[0-9a-f]{64}/);
+  });
+});
+
+describe('self-test screen summary', () => {
+  it('counts failures and keeps details and timing', () => {
+    const s = summarise({ ok: false, checks: [{ name: 'a', ok: true }, { name: 'b', ok: false, detail: 'x' }], argon2idMs: 812 });
+    expect(s).toEqual({ ok: false, failed: 1, lines: [{ name: 'a', ok: true, detail: undefined }, { name: 'b', ok: false, detail: 'x' }], argon2idMs: 812 });
   });
 });

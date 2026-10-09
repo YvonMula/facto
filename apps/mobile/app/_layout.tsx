@@ -50,13 +50,13 @@ function RootStack() {
   );
 }
 
-// Device self-test, only in builds made with EXPO_PUBLIC_FACTO_SELFTEST=1 (CI emulator job).
-// The variable is inlined at build time; release builds never set it.
-if (process.env.EXPO_PUBLIC_FACTO_SELFTEST === '1') {
-  void import('../src/selftest/native-entry').then((m) => m.runNativeSelfTest());
-}
+// Device self-test builds (EXPO_PUBLIC_FACTO_SELFTEST=1, for CI and emulator checks) show only the
+// self-test screen. The variable is inlined at build time, so normal builds drop this code entirely.
+const SelfTestScreen: (() => React.JSX.Element) | null =
+  process.env.EXPO_PUBLIC_FACTO_SELFTEST === '1' ? require('../src/selftest/SelfTestScreen').default : null;
 
 export default function RootLayout() {
+  if (SelfTestScreen) return <SelfTestScreen />;
   return (
     <SafeAreaProvider>
       <SessionProvider>

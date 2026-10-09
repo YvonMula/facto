@@ -143,3 +143,18 @@ export async function runSelfTest(d: SelfTestDeps): Promise<SelfTestResult> {
 /** One logcat line CI looks for. Contains no secrets: only check names, results and a timing. */
 export const SELFTEST_MARKER = 'FACTO_SELFTEST';
 export const formatResult = (r: SelfTestResult) => `${SELFTEST_MARKER} ${JSON.stringify(r)}`;
+
+/** What the self-test screen shows: one line per check, the failure count, and the Argon2id time. */
+export function summarise(r: SelfTestResult): {
+  ok: boolean;
+  failed: number;
+  lines: { name: string; ok: boolean; detail?: string }[];
+  argon2idMs?: number;
+} {
+  return {
+    ok: r.ok,
+    failed: r.checks.filter((c) => !c.ok).length,
+    lines: r.checks.map((c) => ({ name: c.name, ok: c.ok, detail: c.detail })),
+    argon2idMs: r.argon2idMs,
+  };
+}

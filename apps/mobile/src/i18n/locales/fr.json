@@ -129,5 +129,16 @@
     "showTitle": "Code de récupération de ce cas",
     "showWarning": "Toute personne ayant ce code peut agir en votre nom dans ce cas uniquement. Notez-le et gardez-le en lieu sûr. Facto ne pourra plus l’afficher si vous effacez ce téléphone.",
     "showBody": "Recopiez le code à la main. Il n’est pas copié dans le presse-papiers."
+  },
+  "selftest": {
+    "title": "Autotest de l’appareil Facto",
+    "running": "Vérifications en cours…",
+    "allPass": "Toutes les vérifications ont réussi",
+    "someFail_one": "{{count}} vérification a échoué",
+    "someFail_other": "{{count}} vérifications ont échoué",
+    "pass": "OK",
+    "fail": "ÉCHEC",
+    "argon2": "Protection de la clé par code (Argon2id) : {{ms}} ms",
+    "crashed": "L’autotest s’est arrêté : {{detail}}"
   }
 }

@@ -101,7 +101,7 @@ _Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` · PR: Y
 | `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
 | `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), phone backend adapter (`backend-rn.ts`), recovery codes (`recovery.ts`), `test-vectors.json` | 60 |
 | `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
-| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; recovery: restore from My activity, show screen ready for Phase 3 case pages, single key entry point `src/secure/case-keys.ts`; device self-test (`src/selftest`, only in builds with `EXPO_PUBLIC_FACTO_SELFTEST=1`; absent from normal bundles); FR/EN; INTERNET only | 27 + typecheck + Android bundle |
+| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; recovery: restore from My activity, show screen ready for Phase 3 case pages, single key entry point `src/secure/case-keys.ts`; device self-test (`src/selftest`, only in builds with `EXPO_PUBLIC_FACTO_SELFTEST=1`, which show a PASS/FAIL results screen instead of the app; absent from normal bundles); FR/EN; INTERNET only | 28 + typecheck + Android bundle |
 | `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
 
 ### Decisions
@@ -141,7 +141,7 @@ Decided in conversation with the owner (not ADRs):
 - Phone crypto backend on Hermes with the real `react-native-libsodium` (vectors only pass through a Node stand-in with the same API).
 - On a device: SQLCipher actually encrypting the file, the raw-key `x'…'` form being honoured, `db.delete()` removing WAL/SHM files, Keystore/Keychain deletion, Argon2id time on a 2 GB phone, locking when the app goes to the background, and the PIN failure counter surviving the app being killed mid-check.
 - The app on a real device or emulator.
-- GitHub CI has not run yet: private-repo Actions were blocked by billing; the repo is now public and CI is re-triggered.
+- GitHub CI cannot run: the owner's GitHub account is locked over a declined card payment (affects public repos too). Workaround in progress: a self-test APK built in the Claude container (Android SDK installed outside the repo) and run by the owner on BlueStacks.
 
 ### Next steps
 

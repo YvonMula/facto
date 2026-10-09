@@ -129,5 +129,16 @@
     "showTitle": "Recovery code for this case",
     "showWarning": "Anyone with this code can act as you in this case only. Write it down and keep it somewhere safe. Facto cannot show it again if you erase this phone.",
     "showBody": "Write the code down by hand. It is not copied to the clipboard."
+  },
+  "selftest": {
+    "title": "Facto device self-test",
+    "running": "Running checks…",
+    "allPass": "All checks passed",
+    "someFail_one": "{{count}} check failed",
+    "someFail_other": "{{count}} checks failed",
+    "pass": "PASS",
+    "fail": "FAIL",
+    "argon2": "PIN key wrapping (Argon2id): {{ms}} ms",
+    "crashed": "The self-test stopped: {{detail}}"
   }
 }
