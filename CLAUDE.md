@@ -77,6 +77,17 @@ CI (`.github/workflows/ci.yml`) runs install, typecheck, test, prebuild and gate
 
 Metro's cache does not key on `EXPO_PUBLIC_*` variables: after changing `EXPO_PUBLIC_FACTO_SELFTEST` locally, bundle with `--clear`.
 
+Building the self-test APK locally (while GitHub Actions is unavailable): Android SDK in `~/android-sdk` (platform 36, build-tools 36.0.0, NDK 27.1.12297006, CMake 3.22.1), and a Gradle init script in `~/.gradle/init.d/` that puts Google Maven and Google's Maven Central mirror first, because Maven Central rate-limits the Claude container (HTTP 429). Both live outside the repo. Then:
+
+```sh
+EXPO_PUBLIC_FACTO_SELFTEST=1 pnpm --filter @facto/mobile prebuild
+cd apps/mobile/android && ANDROID_HOME=~/android-sdk EXPO_PUBLIC_FACTO_SELFTEST=1 NODE_ENV=production \
+  ./gradlew assembleRelease -PreactNativeArchitectures=x86_64 -Pexpo.useLegacyPackaging=true
+FACTO_MERGED_MANIFEST=$PWD/app/build/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml pnpm gates permissions
+```
+
+If the build reports a missing `libsodium.so`, re-run `tar -xzf libsodium/build.tgz --directory ./libsodium` inside `node_modules/react-native-libsodium`.
+
 Spikes live in `packages/crypto/spikes/` and `spikes/`. They are not exported or shipped until their ADR is accepted.
 
 ## Project status
@@ -88,7 +99,7 @@ _Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` · PR: Y
 | Phase | State | Notes |
 | --- | --- | --- |
 | CI gates (before features) | ✅ Done | 7 gates in `tools/gates`: no-location, no-telemetry, no-identifiers, deps-reviewed, permissions, i18n, claims |
-| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN, 3-attempt limit (ADR 0009). Per-case recovery codes (format, restore screen, show screen) done. Missing: device verification of the native modules, external crypto review (gate) |
+| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN, 3-attempt limit (ADR 0009). Per-case recovery codes (format, restore screen, show screen) done. Native modules verified on an Android emulator (BlueStacks, all 7 self-test checks PASS). Missing: real-phone run, external crypto review (gate) |
 | 2. Backend core | ⬜ Not started | |
 | 3. App V1 | 🟡 Shell only | `apps/mobile` shell built early on request; no feature code |
 | 4–8. Dashboard, pilot, audit, launch, after launch | ⬜ Not started | |
@@ -134,21 +145,37 @@ Decided in conversation with the owner (not ADRs):
 - The first real Gradle build showed expo-secure-store merging USE_BIOMETRIC and USE_FINGERPRINT into the app; both are now blocked and the gate requires their removal.
 - 3 wrong PINs in a row wipe the phone, with no attempts-left warning; long-press wipe asks for confirmation (ADR 0009).
 
+### Verified on Android (BlueStacks, 2026-10-09)
+
+Self-test APK `facto-selftest-x86_64.apk` (SHA-256 `9d6595a6e2dcdd4ca9504b874f0fa46b64b6b452ae25be9fcf97667a6f8e56ca`, built from commit `a76ad2f`), run by the owner on BlueStacks 5.22, 64-bit Android x86_64. **All 7 checks PASS:**
+
+| Check | Proves |
+| --- | --- |
+| vectors | Hermes + the real `react-native-libsodium` reproduce `test-vectors.json` byte for byte (keys, nullifiers, signatures, recovery codes, RFC HMAC, envelope opening) |
+| sqlcipher | SQLCipher is linked; the raw-key `x'…'` form works; the right key reads back, a wrong key and no key both fail (file is encrypted) |
+| db-delete | `db.delete()` removes the database; a reopened one is empty |
+| keystore-delete | Keystore set/get/delete; a deleted value reads back as null |
+| argon2id | PIN key wrapping round-trips; **559 ms** at INTERACTIVE limits |
+| pin-counter | The PIN failure counter persists across app restarts (new `Vault` instances); the 3rd wrong PIN is `exhausted` |
+| recovery | Recovery code round-trip on the phone runtime |
+
+Caveats: BlueStacks' Keystore is software-backed, and it runs on a desktop CPU, so the Argon2id time is faster than on a low-end phone. Also verified on the real Gradle build: the merged manifest matches the PRD 7.2 matrix (INTERNET plus the app-private receiver permission) after blocking USE_BIOMETRIC and USE_FINGERPRINT.
+
 ### Not verified yet
 
 - Arti bootstrap to the Tor network (container has no direct TCP to relays).
 - Arti Android build (no Android NDK in the container).
 - Privacy Pass on Hermes (no `crypto.subtle`; phone path undecided).
-- Phone crypto backend on Hermes with the real `react-native-libsodium` (vectors only pass through a Node stand-in with the same API).
-- On a device: SQLCipher actually encrypting the file, the raw-key `x'…'` form being honoured, `db.delete()` removing WAL/SHM files, Keystore/Keychain deletion, Argon2id time on a 2 GB phone, locking when the app goes to the background, and the PIN failure counter surviving the app being killed mid-check.
-- The app on a real device or emulator.
-- GitHub CI cannot run: the owner's GitHub account is locked over a declined card payment (affects public repos too). Workaround in progress: a self-test APK built in the Claude container (Android SDK installed outside the repo) and run by the owner on BlueStacks.
+- On a real phone: hardware-backed Keystore deletion, Argon2id time on a 2 GB phone, locking when the app goes to the background, the PIN failure counter surviving the app being killed *during* the check (only restart persistence is proven), and WAL/SHM files gone at file level after `db.delete()`.
+- iOS: nothing has run on iOS yet.
+- GitHub CI cannot run: the owner's GitHub account is locked over a declined card payment (affects public repos too). Workaround used: the self-test APK is built in the Claude container and run by the owner on BlueStacks (see Commands).
 
 ### Next steps
 
-1. Get the Android self-test workflow green on the PR, record its results (incl. Argon2id timing) here, and move the emulator-covered items out of "Not verified yet". A real 2 GB phone run is still needed for timing.
-2. Prepare the external cryptographic review package (phase 1 gate).
-3. Then Phase 2: API + intake, issuer, workers, DB migrations.
+1. Prepare the external cryptographic review package (phase 1 gate).
+2. Run the same self-test APK on a real low-end Android phone when one is available (hardware Keystore, 2 GB timing).
+3. Plan Phase 2: API + intake, issuer, workers, DB migrations.
+4. CI resumes once the GitHub billing lock is cleared, or after moving to a pseudonymous account/organisation.
 
 ### Open questions
 
