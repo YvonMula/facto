@@ -2,6 +2,7 @@ import type { SodiumBackend } from '../src/backend.js';
 import { fromHex, toBase64Url, toHex } from '../src/encoding.js';
 import { deriveCaseAuthorKey, deriveCaseIdentityKey, deriveCaseRoot, nullifier } from '../src/keys.js';
 import { signingBytes, signPayload } from '../src/sign.js';
+import { recoveryCodeFor } from '../src/recovery.js';
 import { CASE_A, CASE_B, COMMENT_ID, DEVICE_SECRET_HEX, vectorCase, vectorClaim, vectorComment } from './vector-inputs.js';
 
 /** Everything deterministic that both runtimes must reproduce byte for byte. */
@@ -24,6 +25,7 @@ export function computeDeterministicVectors(b: SodiumBackend) {
       vote: { [CASE_A]: toHex(nullifier(b, ds, 'vote', CASE_A)), [COMMENT_ID]: toHex(nullifier(b, ds, 'vote', COMMENT_ID)) },
       flag: { [CASE_A]: toHex(nullifier(b, ds, 'flag', CASE_A)) },
     },
+    recovery_codes: { [CASE_A]: recoveryCodeFor(b, ds, CASE_A) },
     signatures: {
       case: { signing_input: toHex(signingBytes(c)), signature: signPayload(b, c, authorA.privateKey) },
       identity_claim: { signing_input: toHex(signingBytes(claim)), signature: signPayload(b, claim, identityA.privateKey) },

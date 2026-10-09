@@ -59,6 +59,7 @@ describe('test vectors', () => {
     expect(fresh.keys).toEqual(vectors.keys);
     expect(fresh.nullifiers).toEqual(vectors.nullifiers);
     expect(fresh.signatures).toEqual(vectors.signatures);
+    expect(fresh.recovery_codes).toEqual(vectors.recovery_codes);
   });
   it('the stored envelope still opens', () => {
     const e = vectors.envelope;

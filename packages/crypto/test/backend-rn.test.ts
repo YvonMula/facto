@@ -68,6 +68,7 @@ describe('phone backend adapter reproduces the vectors byte for byte', () => {
     expect(fresh.keys).toEqual(vectors.keys);
     expect(fresh.nullifiers).toEqual(vectors.nullifiers);
     expect(fresh.signatures).toEqual(vectors.signatures);
+    expect(fresh.recovery_codes).toEqual(vectors.recovery_codes);
   });
   it('opens the stored vector envelope', () => {
     const e = vectors.envelope;

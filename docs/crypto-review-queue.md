@@ -13,3 +13,4 @@ Every change marked `NEEDS-CRYPTO-REVIEW` is listed here until a human approves 
 | 2026-10-08 | ADR 0008: per-case root key (author and identity keys derive from it) and ASCII-only HKDF info; vectors regenerated | Accepted by owner; external review pending |
 | 2026-10-08 | `local-keys.ts`: SQLCipher key wrapped with Argon2id(PIN, INTERACTIVE) + XChaCha20-Poly1305, purpose-bound AD; duress verifier always stored (dummy when unset) | Proposed |
 | 2026-10-08 | `backend-rn.ts`: phone SodiumBackend over react-native-libsodium (HMAC via HKDF-Extract, JS constant-time memcmp, fill(0) memzero, ASCII-only info/AD) | Proposed |
+| 2026-10-09 | ADR 0010: per-case recovery code (version ‖ case_id ‖ case_root ‖ 4-byte HMAC checksum, Crockford base32) | Accepted by owner; external review pending |
