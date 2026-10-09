@@ -86,7 +86,7 @@ _Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` (no PR y
 | Phase | State | Notes |
 | --- | --- | --- |
 | CI gates (before features) | ✅ Done | 7 gates in `tools/gates`: no-location, no-telemetry, no-identifiers, deps-reviewed, permissions, i18n, claims |
-| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN, 3-attempt limit (ADR 0009). Missing: device verification of the native modules, per-case recovery codes (UI + format), external crypto review (gate) |
+| 1. Foundation | 🟡 In progress | Done: `packages/schema`, `packages/crypto` (Node + phone backends), SQLCipher store, panic wipe (keys first), app PIN + duress PIN, 3-attempt limit (ADR 0009). Per-case recovery codes (format, restore screen, show screen) done. Missing: device verification of the native modules, external crypto review (gate) |
 | 2. Backend core | ⬜ Not started | |
 | 3. App V1 | 🟡 Shell only | `apps/mobile` shell built early on request; no feature code |
 | 4–8. Dashboard, pilot, audit, launch, after launch | ⬜ Not started | |
@@ -99,7 +99,7 @@ _Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` (no PR y
 | `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
 | `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), phone backend adapter (`backend-rn.ts`), recovery codes (`recovery.ts`), `test-vectors.json` | 60 |
 | `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
-| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; FR/EN; INTERNET only | 19 + typecheck + Android bundle |
+| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; recovery: restore from My activity, show screen ready for Phase 3 case pages, single key entry point `src/secure/case-keys.ts`; FR/EN; INTERNET only | 23 + typecheck + Android bundle |
 | `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
 
 ### Decisions
@@ -144,9 +144,8 @@ Decided in conversation with the owner (not ADRs):
 ### Next steps
 
 1. Device build (EAS development build or a machine with the Android SDK): run the vector suite on Hermes and the device checks listed above.
-2. Per-case recovery codes (PRD 4.7): format for `case_id + case_root` (ADR 0008), export and import screens.
-3. Prepare the external cryptographic review package (phase 1 gate).
-4. Then Phase 2: API + intake, issuer, workers, DB migrations.
+2. Prepare the external cryptographic review package (phase 1 gate).
+3. Then Phase 2: API + intake, issuer, workers, DB migrations.
 
 ### Open questions
 
@@ -154,3 +153,4 @@ Decided in conversation with the owner (not ADRs):
 - rustls crypto provider for Arti (`ring` proposed).
 - Phone implementation for Privacy Pass: WebCrypto polyfill or Rust native module.
 - Where the merged-manifest permission check runs in the release pipeline.
+- Screenshot blocking (PRD 7.2, FLAG_SECURE) on the recovery-code and PIN screens: needs a reviewed approach that adds no permission outside the matrix.

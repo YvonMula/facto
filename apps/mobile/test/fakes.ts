@@ -30,10 +30,13 @@ export class FakeDbFiles implements DbFiles {
     const log = this.log;
     return {
       async execute(sql, params = []) {
-        if (sql.startsWith('INSERT')) rows.set(String(params[0]), String(params[1]));
+        // Each table gets its own key space; the column name is the one the SELECT asks for.
+        const table = /(?:INTO|FROM)\s+(\w+)/.exec(sql)?.[1] ?? '';
+        if (sql.startsWith('INSERT')) rows.set(`${table}:${String(params[0])}`, String(params[1]));
         if (sql.startsWith('SELECT')) {
-          const v = rows.get(String(params[0]));
-          return { rows: v === undefined ? [] : [{ value: v }] };
+          const col = /SELECT\s+(\w+)/.exec(sql)?.[1] ?? 'value';
+          const v = rows.get(`${table}:${String(params[0])}`);
+          return { rows: v === undefined ? [] : [{ [col]: v }] };
         }
         return { rows: [] };
       },

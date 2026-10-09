@@ -112,5 +112,22 @@
     "body": "All data and keys on this phone will be erased. This cannot be undone.",
     "cancel": "Cancel",
     "confirm": "Erase everything"
+  },
+  "recovery": {
+    "restoreLink": "Restore a case with a code",
+    "restoreTitle": "Restore a case",
+    "restoreBody": "Enter the recovery code you saved for one case. It gives back that case and the name you used in it, nothing else. Votes are not restored.",
+    "codeLabel": "Recovery code",
+    "restore": "Restore",
+    "restored": "Case restored. You can now edit it and comment under your name in it.",
+    "done": "Done",
+    "errors": {
+      "format": "This code is incomplete or has invalid characters.",
+      "checksum": "This code has a typing mistake. Check each group.",
+      "version": "This code comes from a newer version of Facto."
+    },
+    "showTitle": "Recovery code for this case",
+    "showWarning": "Anyone with this code can act as you in this case only. Write it down and keep it somewhere safe. Facto cannot show it again if you erase this phone.",
+    "showBody": "Write the code down by hand. It is not copied to the clipboard."
   }
 }

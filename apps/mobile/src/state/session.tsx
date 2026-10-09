@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppState } from 'react-native';
 import i18n, { LANGUAGES, type Language } from '../i18n';
+import type { RecoveryError } from '@facto/crypto';
 import { getState, migrate, setState } from '../secure/app-db';
+import { recoveryCodeForCase, restoreFromCode } from '../secure/case-keys';
 import { backend, dbFiles, keyStore } from '../secure/native';
 import { panicWipe } from '../secure/panic';
 import type { LocalDb } from '../secure/types';
@@ -17,6 +19,9 @@ type Session = {
   unlock(pin: string): Promise<'ok' | 'wrong'>;
   /** Panic wipe (PRD 4.8): keys, then data, then back to first launch. */
   wipe(): Promise<void>;
+  /** Per-case recovery (PRD 4.7, ADR 0010). */
+  restoreCase(code: string): Promise<{ ok: true; caseId: string } | { ok: false; error: RecoveryError }>;
+  recoveryCode(caseId: string): Promise<string>;
 };
 
 const Ctx = createContext<Session | null>(null);
@@ -123,6 +128,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         return 'wrong';
       },
       wipe: () => wipeAndRestart(false),
+      restoreCase: async (code) => {
+        if (!db.current) throw new Error('no open session');
+        return restoreFromCode(backend, db.current, code);
+      },
+      recoveryCode: async (caseId) => {
+        if (!db.current) throw new Error('no open session');
+        return recoveryCodeForCase(backend, vault, db.current, caseId);
+      },
     }),
     [phase, openDb, wipeAndRestart],
   );

@@ -43,6 +43,8 @@ function RootStack() {
       </Stack.Protected>
       <Stack.Protected guard={ready}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="recovery/restore" />
+        <Stack.Screen name="recovery/show" />
       </Stack.Protected>
     </Stack>
   );
