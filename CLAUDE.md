@@ -131,6 +131,7 @@ Decided in conversation with the owner (not ADRs):
 - App state lives only in the SQLCipher database; nothing is written unencrypted to disk.
 - No biometric unlock in V1 (keeps the Face ID usage key out of the permission matrix).
 - Duress PIN: wipe, then open an empty normal-looking app (PRD 7.2 wording); long-press wipe returns to first launch (PRD 4.8).
+- The first real Gradle build showed expo-secure-store merging USE_BIOMETRIC and USE_FINGERPRINT into the app; both are now blocked and the gate requires their removal.
 - 3 wrong PINs in a row wipe the phone, with no attempts-left warning; long-press wipe asks for confirmation (ADR 0009).
 
 ### Not verified yet

@@ -41,6 +41,9 @@ const config: ExpoConfig = {
       'android.permission.POST_NOTIFICATIONS',
       'android.permission.SYSTEM_ALERT_WINDOW',
       'android.permission.VIBRATE',
+      // Added by expo-secure-store's library manifest; Facto has no biometric unlock in V1.
+      'android.permission.USE_BIOMETRIC',
+      'android.permission.USE_FINGERPRINT',
     ],
   },
   plugins: [

@@ -30,6 +30,9 @@ export const ANDROID_REQUIRED_REMOVALS = [
   'android.permission.WRITE_EXTERNAL_STORAGE',
   'android.permission.READ_PHONE_STATE',
   'android.permission.POST_NOTIFICATIONS',
+  // expo-secure-store merges these in; found by the merged-manifest check on the first real build.
+  'android.permission.USE_BIOMETRIC',
+  'android.permission.USE_FINGERPRINT',
 ];
 
 /** iOS usage-description keys allowed by the matrix. Any other NS…UsageDescription fails. */
