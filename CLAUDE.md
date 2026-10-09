@@ -81,7 +81,7 @@ Spikes live in `packages/crypto/spikes/` and `spikes/`. They are not exported or
 
 ## Project status
 
-_Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` (no PR yet)._
+_Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` · PR: YvonMula/facto#1._
 
 ### Phases (PRD 10.2)
 
@@ -125,6 +125,7 @@ Decided in conversation with the owner (not ADRs):
 - Bottom nav: Home · Search · + · Alerts · My activity.
 - The old `facto.app` Firebase prototype is abandoned, nothing migrated.
 - Before source publication, move to a fresh repo under a pseudonymous org with clean history; keep personal data out of code and commits.
+- 2026-10-09: the owner made `YvonMula/facto` **public** until the project is done, so CI can run (private-repo Actions were blocked by billing). Known risk: PRD 7.4 operator anonymity — the repo publicly links the owner's GitHub account to Facto. The move to a pseudonymous repo before launch still stands.
 - Tor (Arti) and vote tokens are tackled in Phase 1 as spikes.
 - Device language comes from `Intl`, not `expo-localization`.
 - App state lives only in the SQLCipher database; nothing is written unencrypted to disk.
@@ -140,7 +141,7 @@ Decided in conversation with the owner (not ADRs):
 - Phone crypto backend on Hermes with the real `react-native-libsodium` (vectors only pass through a Node stand-in with the same API).
 - On a device: SQLCipher actually encrypting the file, the raw-key `x'…'` form being honoured, `db.delete()` removing WAL/SHM files, Keystore/Keychain deletion, Argon2id time on a 2 GB phone, locking when the app goes to the background, and the PIN failure counter surviving the app being killed mid-check.
 - The app on a real device or emulator.
-- GitHub CI has not run (no PR opened yet).
+- GitHub CI has not run yet: private-repo Actions were blocked by billing; the repo is now public and CI is re-triggered.
 
 ### Next steps
 
