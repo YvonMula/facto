@@ -73,7 +73,9 @@ pnpm --filter @facto/mobile start           # Metro for a development build (exp
 cd spikes/arti && cargo build --release     # Arti spike (ADR 0007)
 ```
 
-CI (`.github/workflows/ci.yml`) runs install, typecheck, test, prebuild and gates on every push.
+CI (`.github/workflows/ci.yml`) runs install, typecheck, test, prebuild and gates on every push. `.github/workflows/android-selftest.yml` builds a self-test APK (x86_64), checks the merged manifest, and runs the device self-test on an API 31 emulator (`.github/scripts/run-selftest.sh` reads the `FACTO_SELFTEST` logcat line).
+
+Metro's cache does not key on `EXPO_PUBLIC_*` variables: after changing `EXPO_PUBLIC_FACTO_SELFTEST` locally, bundle with `--clear`.
 
 Spikes live in `packages/crypto/spikes/` and `spikes/`. They are not exported or shipped until their ADR is accepted.
 
@@ -95,11 +97,11 @@ _Last updated: 2026-10-09 · working branch `claude/new-session-2dnc6z` (no PR y
 
 | Path | Content | Tests |
 | --- | --- | --- |
-| `tools/gates` | Invariant gates + fixture tests | 49 |
+| `tools/gates` | Invariant gates + fixture tests; permissions gate also checks a Gradle-merged manifest (`FACTO_MERGED_MANIFEST`) | 53 |
 | `packages/schema` | Zod: envelope v1, case / identity-claim / comment v1 (coarse time only) | 8 |
 | `packages/crypto` | Device secret, per-case root → author/identity keys, nullifiers, canonical signing, sealed envelope, replay cache, PIN key wrapping + duress verifier (`local-keys.ts`), phone backend adapter (`backend-rn.ts`), recovery codes (`recovery.ts`), `test-vectors.json` | 60 |
 | `packages/crypto/spikes/tokens` | Privacy Pass (RFC 9578 type 2) spike, dev-only | 4 |
-| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; recovery: restore from My activity, show screen ready for Phase 3 case pages, single key entry point `src/secure/case-keys.ts`; FR/EN; INTERNET only | 23 + typecheck + Android bundle |
+| `apps/mobile` | Expo SDK 57: language → 3 safety screens → optional PIN (+ duress) → tabs Home · Search · + · Alerts · My activity; lock screen; device secret + DB key in Keystore/Keychain (`src/secure/vault.ts`); SQLCipher via op-sqlite; panic wipe (`src/secure/panic.ts`) with confirmation; 3-attempt PIN limit; recovery: restore from My activity, show screen ready for Phase 3 case pages, single key entry point `src/secure/case-keys.ts`; device self-test (`src/selftest`, only in builds with `EXPO_PUBLIC_FACTO_SELFTEST=1`; absent from normal bundles); FR/EN; INTERNET only | 27 + typecheck + Android bundle |
 | `spikes/arti` | Arti 0.47 embedded Tor spike (Rust) | builds on x86_64 |
 
 ### Decisions
@@ -139,11 +141,10 @@ Decided in conversation with the owner (not ADRs):
 - On a device: SQLCipher actually encrypting the file, the raw-key `x'…'` form being honoured, `db.delete()` removing WAL/SHM files, Keystore/Keychain deletion, Argon2id time on a 2 GB phone, locking when the app goes to the background, and the PIN failure counter surviving the app being killed mid-check.
 - The app on a real device or emulator.
 - GitHub CI has not run (no PR opened yet).
-- Permissions gate checks the prebuild manifest, not yet the Gradle-merged release manifest.
 
 ### Next steps
 
-1. Device build (EAS development build or a machine with the Android SDK): run the vector suite on Hermes and the device checks listed above.
+1. Get the Android self-test workflow green on the PR, record its results (incl. Argon2id timing) here, and move the emulator-covered items out of "Not verified yet". A real 2 GB phone run is still needed for timing.
 2. Prepare the external cryptographic review package (phase 1 gate).
 3. Then Phase 2: API + intake, issuer, workers, DB migrations.
 
@@ -152,5 +153,4 @@ Decided in conversation with the owner (not ADRs):
 - PRD 10.4 list (legal entity, hosting, funding, limits, urgent-alert policy, attestation vs proof-of-work, reporting obligations).
 - rustls crypto provider for Arti (`ring` proposed).
 - Phone implementation for Privacy Pass: WebCrypto polyfill or Rust native module.
-- Where the merged-manifest permission check runs in the release pipeline.
 - Screenshot blocking (PRD 7.2, FLAG_SECURE) on the recovery-code and PIN screens: needs a reviewed approach that adds no permission outside the matrix.

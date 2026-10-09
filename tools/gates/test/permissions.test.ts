@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ANDROID_MANIFEST, ANDROID_REQUIRED_REMOVALS, permissions } from '../src/permissions.js';
+import { ANDROID_MANIFEST, ANDROID_REQUIRED_REMOVALS, checkMergedManifest, permissions } from '../src/permissions.js';
 import { makeRepo } from './helpers.js';
 
 const manifest = (extra = '', removals = ANDROID_REQUIRED_REMOVALS) => `<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
@@ -44,5 +44,27 @@ describe('permissions', () => {
   });
   it('skips when there is no mobile app yet', () => {
     expect(permissions.run(makeRepo({ 'package.json': '{}' }))).toEqual([]);
+  });
+});
+
+describe('permissions, merged manifest mode', () => {
+  const merged = (extra: string) => `<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="app.facto.mobile">
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="app.facto.mobile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
+${extra}
+</manifest>`;
+  it('passes when only matrix permissions and the app-private receiver permission remain', () => {
+    expect(checkMergedManifest(merged(''), 'm.xml')).toEqual([]);
+  });
+  it('fails on a permission a library merged in', () => {
+    const v = checkMergedManifest(merged('  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>'), 'm.xml');
+    expect(v[0]?.message).toMatch(/ACCESS_NETWORK_STATE/);
+  });
+  it('fails on AD_ID or location surviving the merge', () => {
+    expect(checkMergedManifest(merged('  <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>'), 'm.xml')).toHaveLength(1);
+    expect(checkMergedManifest(merged('  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>'), 'm.xml')).toHaveLength(1);
+  });
+  it('does not accept another package\'s receiver permission', () => {
+    expect(checkMergedManifest(merged('  <uses-permission android:name="com.other.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>'), 'm.xml')).toHaveLength(1);
   });
 });

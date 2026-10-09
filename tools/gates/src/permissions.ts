@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { type Gate, read, type Violation } from './lib.js';
 
@@ -84,6 +84,11 @@ export const permissions: Gate = {
   description: 'Generated Android manifest and iOS Info.plist match the PRD 7.2 permission matrix (invariant 11)',
   run(root) {
     const out: Violation[] = [];
+    const merged = process.env.FACTO_MERGED_MANIFEST;
+    if (merged) {
+      if (!existsSync(merged)) return [{ gate: this.name, file: merged, message: 'FACTO_MERGED_MANIFEST points to a missing file' }];
+      return checkMergedManifest(readFileSync(merged, 'utf8'), merged);
+    }
     if (!existsSync(join(root, MOBILE_DIR))) return out; // no app yet
     const v = (file: string, message: string, line?: number) => out.push({ gate: this.name, file, line, message });
 
@@ -113,3 +118,22 @@ export const permissions: Gate = {
     return out;
   },
 };
+
+/**
+ * Merged-manifest mode (CI emulator job): set FACTO_MERGED_MANIFEST to the Gradle-merged
+ * AndroidManifest.xml. Removed permissions are gone from a merged manifest, so here the rule is
+ * simply: every declared permission is in the matrix. The one extra allowed entry is the
+ * app-private `<package>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` that androidx.core declares
+ * for the app's own broadcast receivers; it grants nothing outside the app.
+ */
+export function checkMergedManifest(xml: string, file: string): Violation[] {
+  const pkg = /<manifest[^>]*\spackage="([^"]+)"/.exec(xml)?.[1];
+  const own = pkg ? `${pkg}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` : null;
+  const out: Violation[] = [];
+  for (const p of parseAndroidPermissions(xml)) {
+    if (p.removed) continue;
+    if (ANDROID_ALLOWED.has(p.name) || p.name === own) continue;
+    out.push({ gate: 'permissions', file, line: p.line, message: `merged manifest declares a permission outside the PRD 7.2 matrix: ${p.name}` });
+  }
+  return out;
+}

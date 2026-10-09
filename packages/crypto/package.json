@@ -6,7 +6,9 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./node": "./src/backend-node.ts"
+    "./node": "./src/backend-node.ts",
+    "./vectors": "./scripts/compute-vectors.ts",
+    "./test-vectors.json": "./test-vectors.json"
   },
   "scripts": {
     "test": "vitest run",

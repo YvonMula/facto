@@ -34,19 +34,30 @@ function wrap(db: DB): LocalDb {
   };
 }
 
-export const dbFiles: DbFiles = {
+/** Encrypted database files under one name. The app uses `facto.db`; the self-test uses its own file. */
+export function makeDbFiles(name: string): DbFiles & { openWithoutKey(): Promise<LocalDb> } {
+  return {
   async open(key) {
     // Fail closed: never write app data to a database built without SQLCipher.
     if (!isSQLCipher()) throw new Error('op-sqlite was built without SQLCipher');
     // SQLCipher raw-key form: the 32-byte key is used directly, with no passphrase KDF.
-    const db = open({ name: DB_NAME, encryptionKey: `x'${toHex(key)}'` });
+    const db = open({ name, encryptionKey: `x'${toHex(key)}'` });
     // Reading the schema fails immediately if the key is wrong.
     await db.execute('SELECT count(*) FROM sqlite_master');
     return wrap(db);
   },
   async deleteAll() {
     // Deleting needs a handle but no key: SQLite does not read the file until a statement runs.
-    const db = open({ name: DB_NAME });
+    const db = open({ name });
     db.delete();
   },
-};
+  /** Self-test only: an encrypted file must be unreadable without its key. */
+  async openWithoutKey() {
+    const db = open({ name });
+    await db.execute('SELECT count(*) FROM sqlite_master');
+    return wrap(db);
+  },
+  };
+}
+
+export const dbFiles: DbFiles = makeDbFiles(DB_NAME);

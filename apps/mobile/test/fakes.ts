@@ -30,11 +30,20 @@ export class FakeDbFiles implements DbFiles {
     const log = this.log;
     return {
       async execute(sql, params = []) {
-        // Each table gets its own key space; the column name is the one the SELECT asks for.
+        // Minimal SQL: each table is a key space. INSERT stores (first param → last param);
+        // SELECT col FROM table [WHERE … = ?] reads one or all values; count(*) counts a table.
         const table = /(?:INTO|FROM)\s+(\w+)/.exec(sql)?.[1] ?? '';
-        if (sql.startsWith('INSERT')) rows.set(`${table}:${String(params[0])}`, String(params[1]));
+        if (sql.startsWith('CREATE')) return { rows: [] };
+        if (sql.startsWith('INSERT')) rows.set(`${table}:${String(params[0])}`, String(params[params.length - 1]));
+        if (/count\(\*\) AS n/.test(sql)) {
+          const named = /name = '(\w+)'/.exec(sql)?.[1];
+          return { rows: [{ n: [...rows.keys()].filter((k) => k.startsWith(`${named}:`)).length }] };
+        }
         if (sql.startsWith('SELECT')) {
           const col = /SELECT\s+(\w+)/.exec(sql)?.[1] ?? 'value';
+          if (params.length === 0) {
+            return { rows: [...rows].filter(([k]) => k.startsWith(`${table}:`)).map(([, v]) => ({ [col]: v })) };
+          }
           const v = rows.get(`${table}:${String(params[0])}`);
           return { rows: v === undefined ? [] : [{ [col]: v }] };
         }

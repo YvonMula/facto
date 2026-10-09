@@ -50,6 +50,12 @@ function RootStack() {
   );
 }
 
+// Device self-test, only in builds made with EXPO_PUBLIC_FACTO_SELFTEST=1 (CI emulator job).
+// The variable is inlined at build time; release builds never set it.
+if (process.env.EXPO_PUBLIC_FACTO_SELFTEST === '1') {
+  void import('../src/selftest/native-entry').then((m) => m.runNativeSelfTest());
+}
+
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
